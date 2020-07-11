@@ -1,0 +1,10 @@
+.vertx/*
+target/*
+*.iml
+.idea/*
+*.DS_Store
+deploy.sh
+deploy.config
+test.sh
+node_modules
+
