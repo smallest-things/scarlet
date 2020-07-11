@@ -85,8 +85,13 @@ fun createRoutes(router: Router, functions: MutableMap<String, Function>, adminT
               result.isSuccess -> { // compilation is OK
                 //functions.put("$functionName:$functionVersion", currentFunction)
                 functions.put(functionName, currentFunction)
+
                 context.response().putHeader("content-type", "application/json;charset=UTF-8")
-                  .end(result.getOrNull().toString())
+                  .end(
+                    json {
+                      obj("result" to "function $functionName [$functionLanguage] is compiled")
+                    }.encodePrettily()
+                  )
               }
             }
           }
