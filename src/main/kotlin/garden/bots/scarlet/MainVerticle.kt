@@ -10,8 +10,10 @@ import io.vertx.mqtt.MqttServer
 
 class MainVerticle : AbstractVerticle() {
 
-  override fun stop(stopFuture: Future<Void>) {
+  override fun stop(stopPromise: Promise<Void>) {
     super.stop()
+    println("👋 bye")
+    stopPromise.complete()
   }
 
   override fun start(startPromise: Promise<Void>) {
