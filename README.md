@@ -4,7 +4,7 @@ Scarlet is a **MQTT Server** developed with Vert.x, GraalVM and Kotlin.
 
 > 🖐️ This project is a **mirror from 🦊 GitLab** to GitHub, if you're reading this from [https://github.com/smallest-things/scarlet](https://github.com/smallest-things/scarlet), you must know that the **single source of truth** is on [https://gitlab.com/smallest-things/scarlet](https://gitlab.com/smallest-things/scarlet)
 
-> 👀 You can follow what is planed here [https://gitlab.com/smallest-things/scarlet/-/issues/1](https://gitlab.com/smallest-things/scarlet/-/issues/1) and the current activity of the project here [https://gitlab.com/smallest-things/scarlet/-/boards](https://gitlab.com/smallest-things/scarlet/-/boards)
+> 👀 You can follow what is planned here [https://gitlab.com/smallest-things/scarlet/-/issues/1](https://gitlab.com/smallest-things/scarlet/-/issues/1) and the current activity of the project here [https://gitlab.com/smallest-things/scarlet/-/boards](https://gitlab.com/smallest-things/scarlet/-/boards)
 
 
 ## What is "magic"?
@@ -36,7 +36,7 @@ java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
 ```
 
 > Remarks:
-> - default http port is `8080` (use `TTP_PORT` to change the value)
+> - default http port is `8080` (use `HTTP_PORT` to change the value)
 > - default mqtt port is `1883` (use `MQTT_PORT` to change the value)
 
 ### Create functions
@@ -52,7 +52,7 @@ You need to create the source code of a **named** function, and then do a post h
 }
 ```
 
-> I use [HTTPie](https://httpie.org/) to do may http requests (but you can use curl of course 😉)
+> I use [HTTPie](https://httpie.org/) to do my http requests (but you can use curl of course 😉)
 
 #### Create a JavaScript function
 
