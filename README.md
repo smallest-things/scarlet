@@ -2,6 +2,11 @@
 
 Scarlet is a **MQTT Server** developed with Vert.x, GraalVM and Kotlin.
 
+> 🖐️ This project is a mirror from GitLab to GitHub, if you're reading this from [https://github.com/smallest-things/scarlet](https://github.com/smallest-things/scarlet), you must know that the single source of truth is on [https://gitlab.com/smallest-things/scarlet](https://gitlab.com/smallest-things/scarlet)
+
+> 👀 You can follow what is planed here [https://gitlab.com/smallest-things/scarlet/-/issues/1](https://gitlab.com/smallest-things/scarlet/-/issues/1) and the current activity of the project here [https://gitlab.com/smallest-things/scarlet/-/boards](https://gitlab.com/smallest-things/scarlet/-/boards)
+
+
 ## What is "magic"?
 
 You can add **"functions"** (JavaScript, Python, Ruby) to Scarlet with a REST API, and then you can call these functions from http request or with a **MQTT client**.
