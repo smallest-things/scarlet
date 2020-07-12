@@ -7,4 +7,9 @@ deploy.sh
 deploy.config
 test.sh
 node_modules
-
+.settings
+.classpath
+.project
+hosts.config
+vm-test.sh
+.vscode
