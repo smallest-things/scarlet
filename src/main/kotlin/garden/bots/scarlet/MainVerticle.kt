@@ -6,6 +6,8 @@ import garden.bots.scarlet.mqtt.createMQTTHandlers
 import garden.bots.scarlet.routes.*
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
+import io.vertx.core.Vertx
+import io.vertx.core.VertxOptions
 import io.vertx.ext.web.Router
 import io.vertx.mqtt.MqttServer
 
@@ -66,4 +68,15 @@ class MainVerticle : AbstractVerticle() {
         } // end of when
       }  //end of http listen
   } // end of start()
+
+  companion object {
+    /**
+     * main function is here only for local debugging purpose
+     */
+    @JvmStatic
+    fun main(args: Array<String>) {
+      val vertx: Vertx = Vertx.vertx(VertxOptions())
+      vertx.deployVerticle(MainVerticle())
+    }
+  }
 }
