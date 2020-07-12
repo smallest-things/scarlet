@@ -1,4 +1,4 @@
-package garden.bots.scarlet
+package garden.bots.scarlet.languages
 
 import org.graalvm.polyglot.*
 import kotlin.Result

@@ -1,6 +1,6 @@
 package garden.bots.scarlet.routes
 
-import garden.bots.scarlet.compileFunction
+import garden.bots.scarlet.languages.compileFunction
 import garden.bots.scarlet.data.Function
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.core.json.json
