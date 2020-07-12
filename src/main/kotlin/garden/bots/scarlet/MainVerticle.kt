@@ -2,6 +2,7 @@ package garden.bots.scarlet
 
 import garden.bots.scarlet.data.Function
 import garden.bots.scarlet.data.MqttClient
+import garden.bots.scarlet.mqtt.createMQTTHandlers
 import garden.bots.scarlet.routes.*
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise

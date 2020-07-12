@@ -1,7 +1,7 @@
 package garden.bots.scarlet.routes
 
 import garden.bots.scarlet.data.Function
-import garden.bots.scarlet.invokeFunction
+import garden.bots.scarlet.languages.invokeFunction
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
