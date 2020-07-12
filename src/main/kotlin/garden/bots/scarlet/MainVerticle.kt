@@ -2,8 +2,8 @@ package garden.bots.scarlet
 
 import garden.bots.scarlet.data.Function
 import garden.bots.scarlet.data.MqttClient
+import garden.bots.scarlet.routes.*
 import io.vertx.core.AbstractVerticle
-import io.vertx.core.Future
 import io.vertx.core.Promise
 import io.vertx.ext.web.Router
 import io.vertx.mqtt.MqttServer
@@ -31,8 +31,12 @@ class MainVerticle : AbstractVerticle() {
     // use it like that: export SCARLET_ADMIN_TOKEN="tada"; java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
 
     // TODO: implement https and mqtts
-    createRoutes(router, functions, adminToken)
-    createHandlers(mqttServer, mqttClients, functions)
+    basicHandlers(router)
+    createAddFunctionRoute(router, functions, adminToken)
+    createExecuteFunctionRoute(router, functions, adminToken)
+    createGetFunctionsRoute(router, functions, adminToken)
+
+    createMQTTHandlers(mqttServer, mqttClients, functions)
 
     // 🚀 start http server
     httpServer.requestHandler(router)

@@ -10,7 +10,7 @@ import io.vertx.kotlin.core.json.obj
 import io.vertx.mqtt.MqttAuth
 import io.vertx.mqtt.MqttServer
 
-fun createHandlers(mqttServer: MqttServer, mqttClients: MutableMap<String, MqttClient>, functions: MutableMap<String, Function>) {
+fun createMQTTHandlers(mqttServer: MqttServer, mqttClients: MutableMap<String, MqttClient>, functions: MutableMap<String, Function>) {
   mqttServer.endpointHandler { endpoint ->
     // shows main connect info
     println("MQTT client [${endpoint.clientIdentifier()}] request to connect, clean session = ${endpoint.isCleanSession()}")
