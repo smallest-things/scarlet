@@ -4,7 +4,10 @@
 # export SCARLET_ADMIN_TOKEN="tada"; java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
 # you need to add a header when you query Scarlet
 
-HOST="localhost:8080"
+HTTP_PORT=${HTTP_PORT:-8080}
+DOMAIN=${DOMAIN:-"localhost"}
+HOST="${DOMAIN}:${HTTP_PORT}"
+
 read -d '' CODE << EOF
 function hello(params) {
   return {

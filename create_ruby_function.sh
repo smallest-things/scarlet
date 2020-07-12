@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-HOST="localhost:8080"
+HTTP_PORT=${HTTP_PORT:-8080}
+DOMAIN=${DOMAIN:-"localhost"}
+HOST="${DOMAIN}:${HTTP_PORT}"
+
 read -d '' CODE << EOF
 def ola(params)
   return "🌍 Name= " + params.getString("name")
