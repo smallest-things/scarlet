@@ -7,4 +7,6 @@ deploy.sh
 deploy.config
 test.sh
 node_modules
-
+.settings
+.classpath
+.project
