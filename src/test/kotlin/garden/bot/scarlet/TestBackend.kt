@@ -28,10 +28,15 @@ class TestBackend {
   fun step_02_addFunction() {
     println("👋 test: addFunction")
 
+    val defaultFunctionCode = """
+    def greetings(params):
+        return "Name is " + params.getString("name")
+    """.trimIndent()
+
     val currentFunction: Function = Function(
       "greetings",
       "python",
-      "# foo",
+      defaultFunctionCode,
       "6.6.6"
     )
 

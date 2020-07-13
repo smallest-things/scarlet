@@ -1,5 +1,6 @@
 package garden.bots.scarlet.routes
 
+import garden.bots.scarlet.backend.saveFunction
 import garden.bots.scarlet.languages.compileFunction
 import garden.bots.scarlet.data.Function
 import io.vertx.ext.web.Router
@@ -64,6 +65,9 @@ fun createAddFunctionRoute(router: Router, functions: MutableMap<String, Functio
               result.isSuccess -> { // compilation is OK
                 //functions.put("$functionName:$functionVersion", currentFunction)
                 functions.put(functionName, currentFunction)
+
+                // persistence of the function
+                saveFunction(currentFunction)
 
                 context.response().putHeader("content-type", "application/json;charset=UTF-8")
                   .end(

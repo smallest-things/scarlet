@@ -171,6 +171,22 @@ All the subscribed clients will receive the following Json payload:
   - run `node wait.js`
   - run `node send.js`
 
+## Functions persistence
+
+At the first launch, **Scarlet** will create a `./storage` directory with 2 subdirectories:
+- `./storage/functions`
+- `./storage/clients` (not used right now)
+
+All created functions are stored in `./storage/functions` with a filename constructed like that:
+```
+<function_name>@<version>.<extension>
+```
+
+At every start of **Scarlet**, all functions of `./storage` are loaded and compiled.
+
+> - if you have several version of a function, the last one overrides the others
+> - you can override the path `./storage` with this environment variable: `STORAGE_PATH`
+
 ## References
 
 - [Compile and Run a Polyglot Application](https://www.graalvm.org/docs/reference-manual/embed/)
