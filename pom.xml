@@ -94,6 +94,13 @@
       <version>20.0.0</version>
     </dependency>
 
+    <!-- Backend -->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-service-discovery</artifactId>
+      <!--<version>${vertx.version}</version>-->
+    </dependency>
+
   </dependencies>
 
   <build>
