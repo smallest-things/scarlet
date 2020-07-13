@@ -13,3 +13,5 @@ node_modules
 hosts.config
 vm-test.sh
 .vscode
+scarlet.db
+storage/*
