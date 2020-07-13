@@ -94,18 +94,6 @@
       <version>20.0.0</version>
     </dependency>
 
-    <!-- Backend -->
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-service-discovery</artifactId>
-      <!--<version>${vertx.version}</version>-->
-    </dependency>
-
-    <dependency>
-      <groupId>org.dizitart</groupId>
-      <artifactId>potassium-nitrite</artifactId>
-      <version>3.4.2</version>
-    </dependency>
 
   </dependencies>
 
