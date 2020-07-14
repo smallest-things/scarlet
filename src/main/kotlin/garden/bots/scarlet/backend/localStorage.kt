@@ -1,6 +1,7 @@
 package garden.bots.scarlet.backend
 
 import garden.bots.scarlet.data.Function
+import garden.bots.scarlet.data.MqttClient
 import garden.bots.scarlet.data.MqttSubscription
 import java.io.File
 import java.util.*
@@ -8,6 +9,7 @@ import java.util.*
 val storagePath: String = System.getenv("STORAGE_PATH") ?: "./storage"
 const val functionsPath = "functions"
 const val mqttClientsPath = "clients"
+const val mqttSubscriptionsPath = "subscriptions"
 const val eventsPath = "events"
 
 val languages: HashMap<String, String> = hashMapOf("js" to "js", "ruby" to "rb", "python" to "py")
@@ -18,12 +20,14 @@ fun initializeStorage() : Result<Boolean> {
     val storageDirectory = File(storagePath)
     val functionsDirectory = File("${storagePath}/${functionsPath}")
     val clientsDirectory = File("${storagePath}/${mqttClientsPath}")
+    val subscriptionsDirectory = File("${storagePath}/${mqttSubscriptionsPath}")
     val eventsDirectory = File("${storagePath}/${eventsPath}")
 
     storageDirectory.mkdir()
     functionsDirectory.mkdir()
     clientsDirectory.mkdir()
     eventsDirectory.mkdir()
+    subscriptionsDirectory.mkdir()
 
     Result.success(true)
   } catch (exception : Exception) {
@@ -49,10 +53,18 @@ fun saveEvent(function: garden.bots.scarlet.data.Function) : Result<garden.bots.
   }
 }
 
-
-fun saveMqttClient(mqttSubscription: garden.bots.scarlet.data.MqttSubscription) : Result<garden.bots.scarlet.data.MqttSubscription>{
+fun saveMqttClient(mqttClient: garden.bots.scarlet.data.MqttClient) : Result<garden.bots.scarlet.data.MqttClient>{
   return try {
-    File("${storagePath}/${mqttClientsPath}/${mqttSubscription.id}").writeText(mqttSubscription.toString())
+    File("${storagePath}/${mqttClientsPath}/${mqttClient.id}").writeText(mqttClient.toString())
+    Result.success(mqttClient)
+  } catch (exception: Exception) {
+    Result.failure(exception)
+  }
+}
+
+fun saveMqttSubscription(mqttSubscription: garden.bots.scarlet.data.MqttSubscription) : Result<garden.bots.scarlet.data.MqttSubscription>{
+  return try {
+    File("${storagePath}/${mqttSubscriptionsPath}/${mqttSubscription.id}").writeText(mqttSubscription.toString())
     Result.success(mqttSubscription)
   } catch (exception: Exception) {
     Result.failure(exception)
@@ -118,6 +130,10 @@ fun getAllEvents() : Result<MutableMap<String, Function>> {
   }
 }
 
-fun getAllMqttClients() : Result<MutableMap<String, MqttSubscription>> {
+fun getAllMqttClients() : Result<MutableMap<String, MqttClient>> {
+  TODO()
+}
+
+fun getAllMqttSubscriptions() : Result<MutableMap<String, MqttSubscription>> {
   TODO()
 }

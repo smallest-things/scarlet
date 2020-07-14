@@ -14,7 +14,8 @@ IP=$(multipass info ${vm_name} | grep IPv4 | awk '{print $2}')
 
 echo "👋 Initialize ${vm_name}..."
 
-multipass mount target ${vm_name}:target
+#multipass mount target ${vm_name}:target
+multipass mount ./ ${vm_name}:scarlet
 multipass info ${vm_name}
 
 multipass exec ${vm_name} -- sudo -- sh -c "echo \"${IP} ${vm_domain}\" >> /etc/hosts"
