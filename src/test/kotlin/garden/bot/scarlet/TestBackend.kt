@@ -186,9 +186,9 @@ class TestBackend {
   @Test
   fun step_08_addMqttOnConnect() {
     val defaultFunctionCode = """
-      function mqttOnConnect(endpoint) {
+      function mqttOnConnect(mqttClient) {
         console.log("=== 🚀 mqttOnConnect ===")
-        console.log(endpoint)
+        console.log(mqttClient)
       }
     """.trimIndent()
 
@@ -244,9 +244,10 @@ class TestBackend {
   @Test
   fun step_10_addMqttOnSubscribe() {
     val defaultFunctionCode = """
-      function mqttOnSubscribe(endpoint) {
+      function mqttOnSubscribe(subscription) {
         console.log("=== 🚀 mqttOnSubscribe ===")
-        console.log(endpoint)
+        console.log(subscription)
+
       }
     """.trimIndent()
 
@@ -276,11 +277,11 @@ class TestBackend {
       function mqttOnMessage(mqttParams) {
         console.log("=== 🚀 mqttOnMessage ===")
         console.log(mqttParams)
-        console.log(mqttParams.endpoint)
-        console.log(mqttParams.message)
-        console.log(mqttParams.messagePayLoad)
-        console.log(mqttParams.jsonResult)
-        console.log(mqttParams.mqttClients)
+        console.log("endPoint:", mqttParams.getEndpoint())
+        console.log("message:", mqttParams.getMessage())
+        console.log("payload:", mqttParams.getMessagePayLoad())
+        console.log("result:", mqttParams.getJsonResult())
+        console.log("subscriptions:", mqttParams.getMqttSubscriptions())
       }
     """.trimIndent()
 

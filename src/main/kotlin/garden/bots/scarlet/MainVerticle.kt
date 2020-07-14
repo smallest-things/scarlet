@@ -5,6 +5,7 @@ import garden.bots.scarlet.backend.loadAllEventsAndCompile
 import garden.bots.scarlet.backend.loadAllFunctionsAndCompile
 import garden.bots.scarlet.data.Function
 import garden.bots.scarlet.data.MqttClient
+import garden.bots.scarlet.data.MqttSubscription
 import garden.bots.scarlet.events.triggerEvent
 import garden.bots.scarlet.mqtt.createMQTTHandlers
 import garden.bots.scarlet.routes.*
@@ -33,7 +34,9 @@ class MainVerticle : AbstractVerticle() {
     val functions: MutableMap<String, Function> = HashMap<String, Function>()
     val events: MutableMap<String, Function> = HashMap<String, Function>()
 
+    val mqttSubscriptions: MutableMap<String, MqttSubscription> = HashMap<String, MqttSubscription>()
     val mqttClients: MutableMap<String, MqttClient> = HashMap<String, MqttClient>()
+
 
     val httpPort = System.getenv("`HTTP_PORT`")?.toInt() ?: 8080
     val mqttPort = System.getenv("MQTT_PORT")?.toInt() ?: 1883
@@ -69,7 +72,7 @@ class MainVerticle : AbstractVerticle() {
     createExecuteFunctionRoute(router, functions, adminToken)
     createGetFunctionsRoute(router, functions, adminToken)
 
-    createMQTTHandlers(mqttServer, mqttClients, functions, events)
+    createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, functions, events)
 
     // 🚀 start http server
     httpServer.requestHandler(router)

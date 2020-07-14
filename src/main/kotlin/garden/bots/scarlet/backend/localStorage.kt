@@ -1,7 +1,7 @@
 package garden.bots.scarlet.backend
 
 import garden.bots.scarlet.data.Function
-import garden.bots.scarlet.data.MqttClient
+import garden.bots.scarlet.data.MqttSubscription
 import java.io.File
 import java.util.*
 
@@ -50,10 +50,10 @@ fun saveEvent(function: garden.bots.scarlet.data.Function) : Result<garden.bots.
 }
 
 
-fun saveMqttClient(mqttClient: garden.bots.scarlet.data.MqttClient) : Result<garden.bots.scarlet.data.MqttClient>{
+fun saveMqttClient(mqttSubscription: garden.bots.scarlet.data.MqttSubscription) : Result<garden.bots.scarlet.data.MqttSubscription>{
   return try {
-    File("${storagePath}/${mqttClientsPath}/${mqttClient.id}").writeText(mqttClient.toString())
-    Result.success(mqttClient)
+    File("${storagePath}/${mqttClientsPath}/${mqttSubscription.id}").writeText(mqttSubscription.toString())
+    Result.success(mqttSubscription)
   } catch (exception: Exception) {
     Result.failure(exception)
   }
@@ -118,6 +118,6 @@ fun getAllEvents() : Result<MutableMap<String, Function>> {
   }
 }
 
-fun getAllMqttClients() : Result<MutableMap<String, MqttClient>> {
+fun getAllMqttClients() : Result<MutableMap<String, MqttSubscription>> {
   TODO()
 }
