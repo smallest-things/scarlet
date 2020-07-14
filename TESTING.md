@@ -18,7 +18,7 @@ Then create the virtual machine with this scirpt: `./vm-create.sh` (and wait for
 > - (re)create the vm: `./vm-create.sh`
 > - open a shell prompt on the vm: `./vm-shell.sh`
 
-🖐️ `./vm-create.sh` create a VM (with GraalVM and guest languages) and mount a volume mapped on the `/target` directory of the host. (the `/target` must exist, don't forget to build the project)
+🖐️ `./vm-create.sh` create a VM (with GraalVM and guest languages) and mount a volume named `scarlet` mapped on the `/.` project directory of the host.
 
 🖐️ **the script create a file (`hosts.config`) where you can find the IP address of the VM**
 
@@ -30,6 +30,7 @@ Then create the virtual machine with this scirpt: `./vm-create.sh` (and wait for
 Once the VM created, open a shell (`./vm-shell.sh`) and type:
 
 ```bash
+cd scarlet
 java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
 ```
 

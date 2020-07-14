@@ -180,7 +180,9 @@ All the subscribed clients will receive the following Json payload:
 
 At the first launch, **Scarlet** will create a `./storage` directory with 2 subdirectories:
 - `./storage/functions`
+- `./storage/events` 🚧 documentation in progress (events are functions triggered by **Scarlet**)
 - `./storage/clients` (not used right now)
+- `./storage/subscriptions` (not used right now)
 
 All created functions are stored in `./storage/functions` with a filename constructed like that:
 ```
