@@ -1,9 +1,12 @@
 package garden.bots.scarlet
 
 import garden.bots.scarlet.backend.initializeStorage
+import garden.bots.scarlet.backend.loadAllEventsAndCompile
 import garden.bots.scarlet.backend.loadAllFunctionsAndCompile
 import garden.bots.scarlet.data.Function
 import garden.bots.scarlet.data.MqttClient
+import garden.bots.scarlet.data.MqttSubscription
+import garden.bots.scarlet.events.triggerEvent
 import garden.bots.scarlet.mqtt.createMQTTHandlers
 import garden.bots.scarlet.routes.*
 import io.vertx.core.AbstractVerticle
@@ -11,6 +14,8 @@ import io.vertx.core.Promise
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.ext.web.Router
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.mqtt.MqttServer
 
 class MainVerticle : AbstractVerticle() {
@@ -27,7 +32,11 @@ class MainVerticle : AbstractVerticle() {
     val router = Router.router(vertx)
 
     val functions: MutableMap<String, Function> = HashMap<String, Function>()
+    val events: MutableMap<String, Function> = HashMap<String, Function>()
+
+    val mqttSubscriptions: MutableMap<String, MqttSubscription> = HashMap<String, MqttSubscription>()
     val mqttClients: MutableMap<String, MqttClient> = HashMap<String, MqttClient>()
+
 
     val httpPort = System.getenv("`HTTP_PORT`")?.toInt() ?: 8080
     val mqttPort = System.getenv("MQTT_PORT")?.toInt() ?: 1883
@@ -42,8 +51,19 @@ class MainVerticle : AbstractVerticle() {
           TODO()
         }
         it.isSuccess -> {
+          loadAllEventsAndCompile(events)
           loadAllFunctionsAndCompile(functions)
+
+          /* === 👋 Trigger initialize === */
+          triggerEvent("initialize", json { obj("message" to "initialize") }, events).let {
+            when {
+              it.isFailure -> {}
+              it.isSuccess -> {}
+            }
+          }
+          /* === end of trigger === */
         }
+        else -> { TODO() }
       }
     }
 
@@ -52,7 +72,7 @@ class MainVerticle : AbstractVerticle() {
     createExecuteFunctionRoute(router, functions, adminToken)
     createGetFunctionsRoute(router, functions, adminToken)
 
-    createMQTTHandlers(mqttServer, mqttClients, functions)
+    createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, functions, events)
 
     // 🚀 start http server
     httpServer.requestHandler(router)
@@ -64,6 +84,16 @@ class MainVerticle : AbstractVerticle() {
           }
           http.succeeded() -> {
             println("🌍 Scarlet -=8< http server started on port $httpPort")
+
+            /* === 👋 Trigger httpStarted === */
+            triggerEvent("httpStarted", httpServer, events).let {
+              when {
+                it.isFailure -> {}
+                it.isSuccess -> {}
+              }
+            }
+            /* === end of trigger === */
+
             // 🚀 start mqtt server
             mqttServer.listen(mqttPort) { mqtt ->
               when {
@@ -73,6 +103,16 @@ class MainVerticle : AbstractVerticle() {
                 }
                 mqtt.succeeded() -> {
                   println("📡 Scarlet -=8< mqtt server started on port $mqttPort")
+
+                  /* === 👋 Trigger mqttStarted === */
+                  triggerEvent("mqttStarted", mqttServer, events).let {
+                    when {
+                      it.isFailure -> {}
+                      it.isSuccess -> {}
+                    }
+                  }
+                  /* === end of trigger === */
+
                   startPromise.complete()
                 }
               } // end of when
