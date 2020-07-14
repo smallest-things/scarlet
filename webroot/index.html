@@ -3,57 +3,67 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Hello World</title>
+  <title>Scarlet</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  <!--
   <style>
-    .container
-    {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    .title
-    {
+      .container { min-height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; }
+      .title { font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; display: block; font-weight: 300; font-size: 100px; color: #35495e; letter-spacing: 1px; }
+      .subtitle { font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-weight: 300; font-size: 42px; color: #526488; word-spacing: 5px; padding-bottom: 15px; }
+      .links { padding-top: 15px; }
+  </style>
+  -->
+  <style>
+
+    .main {
+      padding: 10px;
+      /*max-width: 960px;*/
+      width: 100%;
+      /*margin: 100px auto 500px;*/
       font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    #tabs-with-content .tabs:not(:last-child) {
+      margin-bottom: 0;
+    }
+
+    #tabs-with-content .tab-content {
+      padding: 1rem;
+      display: none;
+    }
+
+    #tabs-with-content .tab-content.is-active {
       display: block;
-      font-weight: 300;
-      font-size: 100px;
-      color: #35495e;
-      letter-spacing: 1px;
-    }
-    .subtitle
-    {
-      font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
-      font-weight: 300;
-      font-size: 42px;
-      color: #526488;
-      word-spacing: 5px;
-      padding-bottom: 15px;
-    }
-    .links
-    {
-      padding-top: 15px;
     }
   </style>
+  <link rel="stylesheet" href="css/bulma.min.css">
+
+  <script src="js/vue.js"></script>
+
 </head>
 <body>
-<section class="container">
-  <div>
-    <h1 class="title">
-      Scarlet (dwarf dragonfly)
-    </h1>
-    <h2 class="subtitle">
-      Vert-x / GraalVM / Kotlin
-    </h2>
-    <h2 class="subtitle">
-      🚧 WIP
-    </h2>
-  </div>
-</section>
+
+  <section  id="application" class="container main">
+    <scarlet-title></scarlet-title>
+
+    <scarlet-panel></scarlet-panel>
+
+  </section>
+
+  <script src="components/scarlet-title.js"></script>
+  <script src="components/scarlet-panel.js"></script>
+  <script src="components/scarlet-functions-card.js"></script>
+  <script src="components/scarlet-events-card.js"></script>
+  <script src="components/scarlet-subscriptions-card.js"></script>
+
+  <script>
+    new Vue({
+      el:"#application"
+    })
+  </script>
+
 
 </body>
+
 </html>

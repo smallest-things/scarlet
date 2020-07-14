@@ -71,6 +71,8 @@ class MainVerticle : AbstractVerticle() {
     createAddFunctionRoute(router, functions, adminToken)
     createExecuteFunctionRoute(router, functions, adminToken)
     createGetFunctionsRoute(router, functions, adminToken)
+    createGetEventsRoute(router, events, adminToken)
+    createGetSubscriptionsRoute(router, mqttSubscriptions, adminToken)
 
     createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, functions, events)
 

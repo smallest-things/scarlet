@@ -48,3 +48,17 @@ http POST http://${HOST}/functions name="ola" \
   language="ruby" \
   version="0.0.0" \
   code="$CODE"
+
+read -d '' CODE << EOF
+def hey(params)
+  return "🌍 Name= " + params.getString("name")
+end
+# params is a io.vertx.core.json.JsonObject
+
+EOF
+echo "$CODE"
+
+http POST http://${HOST}/functions name="hey" \
+  language="ruby" \
+  version="0.0.0" \
+  code="$CODE"

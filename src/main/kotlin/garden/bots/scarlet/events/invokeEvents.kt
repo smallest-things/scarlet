@@ -28,7 +28,10 @@ fun triggerEvent(eventName: String, params: Any, events: MutableMap<String, Func
         }
       }
     }
-    else -> { TODO() }
+    else -> {
+      println("${eventName}  is not implemented")
+      return Result.failure(Exception("🖐 ${eventName}  is not implemented"))
+    }
   }
 
 

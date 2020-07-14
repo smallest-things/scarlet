@@ -6,9 +6,9 @@ import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 
 
-fun createGetFunctionsRoute(router: Router, functions: MutableMap<String, Function>, adminToken: String) {
+fun createGetEventsRoute(router: Router, events: MutableMap<String,Function>, adminToken: String) {
 
-  router.get("/functions").handler { context ->
+  router.get("/events").handler { context ->
 
     checkAdminToken(adminToken, context).let { tockenCheck ->
       when {
@@ -23,10 +23,10 @@ fun createGetFunctionsRoute(router: Router, functions: MutableMap<String, Functi
         }
         /* === 🙂 Success === */
         tockenCheck.isSuccess -> {
-          functions.toList()
+          events.toList()
           context.response().putHeader("content-type", "application/json;charset=UTF-8")
             .end(
-              json { obj("functions" to functions.map { entry -> entry.value })}.encodePrettily()
+              json { obj("events" to events.map { entry -> entry.value })}.encodePrettily()
             )
         }
       }
