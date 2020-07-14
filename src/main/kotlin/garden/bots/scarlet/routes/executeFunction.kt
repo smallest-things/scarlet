@@ -53,6 +53,5 @@ fun createExecuteFunctionRoute(router: Router, functions: MutableMap<String, Fun
         } // end of isSuccess
       } // end of when
     } // end of let
-
   }
 }

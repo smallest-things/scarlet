@@ -2,6 +2,7 @@ package garden.bots.scarlet.mqtt
 
 import garden.bots.scarlet.data.Function
 import garden.bots.scarlet.data.MqttClient
+import garden.bots.scarlet.events.triggerEvent
 import garden.bots.scarlet.helpers.executeIfFunctionCall
 import garden.bots.scarlet.helpers.getJsonPayLoad
 import io.netty.handler.codec.mqtt.MqttQoS
@@ -10,12 +11,26 @@ import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.mqtt.MqttAuth
+import io.vertx.mqtt.MqttEndpoint
 import io.vertx.mqtt.MqttServer
 
-fun createMQTTHandlers(mqttServer: MqttServer, mqttClients: MutableMap<String, MqttClient>, functions: MutableMap<String, Function>) {
+data class mqttParams(val endpoint: MqttEndpoint, val message: io.vertx.mqtt.messages.MqttPublishMessage, val messagePayLoad:String, val jsonResult: JsonObject, val mqttClients: MutableMap<String, MqttClient>)
+
+
+fun createMQTTHandlers(mqttServer: MqttServer, mqttClients: MutableMap<String, MqttClient>, functions: MutableMap<String, Function>, events: MutableMap<String, Function>) {
   mqttServer.endpointHandler { endpoint ->
     // shows main connect info
     println("MQTT client [${endpoint.clientIdentifier()}] request to connect, clean session = ${endpoint.isCleanSession()}")
+
+    /* === 👋 Trigger mqttOnConnect === */
+    triggerEvent("mqttOnConnect", endpoint, events).let {
+      when {
+        it.isFailure -> {}
+        it.isSuccess -> {}
+      }
+    }
+    /* === end of trigger === */
+
 
     when(endpoint.auth()) {
       is MqttAuth -> {
@@ -33,6 +48,15 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients: MutableMap<String, M
     endpoint.disconnectHandler {
       println("Received disconnect from client")
       //TODO: remove from the list
+
+      /* === 👋 Trigger mqttOnDisConnect === */
+      triggerEvent("mqttOnDisConnect", endpoint, events).let {
+        when {
+          it.isFailure -> {}
+          it.isSuccess -> {}
+        }
+      }
+      /* === end of trigger === */
     }
 
     // handling requests for subscriptions
@@ -42,9 +66,19 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients: MutableMap<String, M
         println("Subscription for ${s.topicName()} with QoS ${s.qualityOfService()}")
         grantedQosLevels.add(s.qualityOfService())
 
-        mqttClients.put("${endpoint.clientIdentifier()}-", MqttClient(endpoint.clientIdentifier(), s.topicName(), endpoint))
+        // 👋👋👋 a mqtt client can have several topics
+        // so, change the id: identifier + topic or change the structure of the mqtt client
+        mqttClients["${endpoint.clientIdentifier()}-"] = MqttClient(endpoint.clientIdentifier(), s.topicName(), endpoint)
         //TODO: api to get the list of the clients
 
+        /* === 👋 Trigger mqttOnSubscribe === */
+        triggerEvent("mqttOnSubscribe", endpoint, events).let {
+          when {
+            it.isFailure -> {}
+            it.isSuccess -> {}
+          }
+        }
+        /* === end of trigger === */
       }
       // ack the subscriptions request
       endpoint.subscribeAcknowledge(subscribe.messageId(), grantedQosLevels)
@@ -90,9 +124,18 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients: MutableMap<String, M
             }
           }
         }
+      } // End of getJsonPayLoad
 
+      /* === 👋 Trigger mqttOnMessage === */
+      triggerEvent("mqttOnMessage", mqttParams(endpoint, message, messagePayLoad, jsonResult, mqttClients), events).let {
+        when {
+          it.isFailure -> {}
+          it.isSuccess -> {}
+        }
       }
-      // dispatch messages to all subscribed clients
+      /* === end of trigger === */
+
+      /* --- dispatch messages to all subscribed clients --- */
       mqttClients.forEach { id, mqttClient ->
         when(mqttClient.topic==message.topicName() && mqttClient.endpoint.isConnected()) {
           false -> {
