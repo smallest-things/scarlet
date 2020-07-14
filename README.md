@@ -17,7 +17,12 @@ You can add **"functions"** (JavaScript, Python, Ruby) to Scarlet with a REST AP
 
 ### Requirements
 
-- Install GraalVM
+- Install GraalVM, choose your way:
+  - install as described in [GraalVM getting started](https://www.graalvm.org/getting-started/)
+    You will have to modify your PATH to use GraalVM as your JDK for Scarlet
+    Don't forget to modify back for your other JDK based projects
+  - install using [SdkMan](https://sdkman.io/)
+    This will allow to easly switch from/to GraalVM between Scarlet and your other JDK based projects
 - Install embedded languages:
     ```bash
     gu install python
