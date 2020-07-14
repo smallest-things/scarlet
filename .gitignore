@@ -14,8 +14,6 @@ hosts.config
 vm-test.sh
 .vscode
 scarlet.db
-storage/clients/*
-storage/subscriptions/*
 storage/events/tests@0.0.0.js
 storage/functions/tests@0.0.0.js
 
