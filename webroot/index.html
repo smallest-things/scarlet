@@ -6,63 +6,46 @@
   <title>Scarlet</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!--
-  <style>
-      .container { min-height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; }
-      .title { font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; display: block; font-weight: 300; font-size: 100px; color: #35495e; letter-spacing: 1px; }
-      .subtitle { font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-weight: 300; font-size: 42px; color: #526488; word-spacing: 5px; padding-bottom: 15px; }
-      .links { padding-top: 15px; }
-  </style>
-  -->
-  <style>
-
-    .main {
-      padding: 10px;
-      /*max-width: 960px;*/
-      width: 100%;
-      /*margin: 100px auto 500px;*/
-      font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
-    }
-
-    #tabs-with-content .tabs:not(:last-child) {
-      margin-bottom: 0;
-    }
-
-    #tabs-with-content .tab-content {
-      padding: 1rem;
-      display: none;
-    }
-
-    #tabs-with-content .tab-content.is-active {
-      display: block;
-    }
-  </style>
-  <link rel="stylesheet" href="css/bulma.min.css">
-
-  <script src="js/vue.js"></script>
 
 </head>
 <body>
 
-  <section  id="application" class="container main">
-    <scarlet-title></scarlet-title>
+  <scarlet-app></scarlet-app>
 
-    <scarlet-panel></scarlet-panel>
+  <script type="module">
 
-  </section>
+    let styleSheetPromise = (cssPath, variableName) => fetch(cssPath)
+      .then(response => response.text())
+      .then(cssRaw => {
+        const sheet = new CSSStyleSheet()
+        sheet.replaceSync(cssRaw)
+        // save the css result to a global variable to share styles
+        // with web components
+        window[variableName] = sheet
+        return sheet
+      })
+      .catch(error => console.log(`😡 [${variableName}]`, error))
 
-  <script src="components/scarlet-title.js"></script>
-  <script src="components/scarlet-panel.js"></script>
-  <script src="components/scarlet-functions-card.js"></script>
-  <script src="components/scarlet-events-card.js"></script>
-  <script src="components/scarlet-subscriptions-card.js"></script>
+    Promise.all([
+      styleSheetPromise("/css/chota.min.css", "chota")
 
-  <script>
-    new Vue({
-      el:"#application"
+    ]).then(styleSheets => {
+      // apply styles to the main document (`body, html, ...`)
+      document.adoptedStyleSheets = styleSheets
+      import("/components/scarlet-title.js")
+      import("/components/scarlet-nav-bar.js")
+      import("/components/scarlet-functions-card.js")
+      import("/components/scarlet-events-card.js")
+      import("/components/scarlet-subscriptions-card.js")
+      import("/components/scarlet-app.js")
+      import("/js/router.js")
+
     })
+
   </script>
 
+  <!-- polyfill for FireFox -->
+  <script src="/js/adoptedStyleSheets.js"></script>
 
 </body>
 
