@@ -38,7 +38,7 @@ class MainVerticle : AbstractVerticle() {
     val mqttClients: MutableMap<String, MqttClient> = HashMap<String, MqttClient>()
 
 
-    val httpPort = System.getenv("`HTTP_PORT`")?.toInt() ?: 8080
+    val httpPort = System.getenv("HTTP_PORT")?.toInt() ?: 8080
     val mqttPort = System.getenv("MQTT_PORT")?.toInt() ?: 1883
 
     val adminToken = System.getenv("SCARLET_ADMIN_TOKEN") ?: ""
