@@ -1,70 +1,65 @@
-Vue.component(`scarlet-functions-card`, {
-  template: `
-  <div class="card">
-    <header class="card-header">
-      <p class="card-header-title">
-        {{title}}
-      </p>
-    </header>
-    <div class="card-content">
-      <div class="content">
-        <!--
-        <div v-for="func in functions">
-          <h2 class="subtitle">{{func.name}}</h2>
-        </div>
-        -->
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Language</th>
-              <th>Version</th>
-            </tr>
-          </thead>
+import { ScarletElement } from '../js/ScarletElement.js'
 
-          <tbody v-for="func in functions">
-            <tr>
-              <th>{{func.name}}</th>
-              <td>{{func.language}}</td>
-              <td>{{func.version}}</td>
-            </tr>
-          </tbody>
-        </table>
+class ScarletFunctionsCard extends ScarletElement {
 
-      </div>
-    </div>
-    <footer class="card-footer">
-      <!--footer-->
-    </footer>
-  </div>
-  `,
-  data() {
-    return {
-      title: "Functions",
-      functions: null,
-      timer:null
-    }
-  },
-  methods: {
-    populateFunctionsList: function()  {
-      fetch('/functions')
-        .then(response => response.json())
-        .then(data => {
-          this.functions = data.functions
-        })
-    }
-  },
-  mounted() {
-    console.log("⚡️ the scarlet-functions-card vue is mounted")
-    //TODO: authentication and token
-    this.$root.$emit("ping", "functions loaded")
-
-    this.timer = setInterval(this.populateFunctionsList, 3000)
-  },
-  beforeDestroy () {
-    clearInterval(this.timer)
+  constructor() {
+    super()
+    this.styleSheets = [window.chota]
+    this.functions = []
   }
 
-})
+  getData()  {
+    return fetch('/functions')
+      .then(response => response.json())
+      .then(data => {
+        this.functions = data.functions
+      })
+  }
 
+  initialize() {
+    this.getData().then(_ => this.render())
+    this.timer = setInterval(() => this.getData().then(_ => this.render()), 3000)
+  }
 
+  getRows(functions) {
+    return functions.map(func => `
+        <tr>
+            <th>${func.name}</th>
+            <td>${func.language}</td>
+            <td>${func.version}</td>
+        </tr>
+        `
+    ).join("")
+  }
+
+  render() {
+    return this.html(`
+      <div class="card">
+        <header>
+          <h4>Functions</h4>
+        </header>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Language</th>
+                <th>Version</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${this.getRows(this.functions)}
+            </tbody>
+          </table>
+
+        <footer class="is-right">
+          <!--footer-->
+        </footer>
+      </div>
+		`)
+  }
+
+}
+
+customElements.define('scarlet-functions-card', ScarletFunctionsCard)

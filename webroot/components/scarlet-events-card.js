@@ -1,60 +1,65 @@
-Vue.component(`scarlet-events-card`, {
-  template: `
-  <div class="card">
-    <header class="card-header">
-      <p class="card-header-title">
-        {{title}}
-      </p>
-    </header>
-    <div class="card-content">
-      <div class="content">
+import { ScarletElement } from '../js/ScarletElement.js'
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Language</th>
-              <th>Version</th>
-            </tr>
-          </thead>
+class ScarletEventsCard extends ScarletElement {
 
-          <tbody v-for="event in events">
-            <tr>
-              <th>{{event.name}}</th>
-              <td>{{event.language}}</td>
-              <td>{{event.version}}</td>
-            </tr>
-          </tbody>
-        </table>
+  constructor() {
+    super()
+    this.styleSheets = [window.chota]
+    this.events = []
+  }
 
-      </div>
-    </div>
-    <footer class="card-footer">
-      <!--footer-->
-    </footer>
-  </div>
-  `,
-  data() {
-    return {
-      title: "Events",
-      events: null
-    }
-  },
-  methods: {
-    populateEventsList: function(events)  {
-      this.events = events
-    }
-  },
-  mounted() {
-    console.log("⚡️ the scarlet-events-card vue is mounted")
-    //TODO: authentication and token
-    fetch('/events')
+  getData()  {
+    return fetch('/events')
       .then(response => response.json())
       .then(data => {
-        //window.events = data.events
-        this.populateEventsList(data.events)
+        this.events = data.events
       })
-    this.$root.$emit("ping", "events loaded")
   }
-})
 
+  initialize() {
+    this.getData().then(_ => this.render())
+    this.timer = setInterval(() => this.getData().then(_ => this.render()), 3000)
+  }
+
+  getRows(events) {
+    return events.map(event => `
+        <tr>
+            <th>${event.name}</th>
+            <td>${event.language}</td>
+            <td>${event.version}</td>
+        </tr>
+        `
+    ).join("")
+  }
+
+  render() {
+    return this.html(`
+      <div class="card">
+        <header>
+          <h4>Events</h4>
+        </header>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Language</th>
+                <th>Version</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${this.getRows(this.events)}
+            </tbody>
+          </table>
+
+        <footer class="is-right">
+          <!--footer-->
+        </footer>
+      </div>
+		`)
+  }
+
+}
+
+customElements.define('scarlet-events-card', ScarletEventsCard)

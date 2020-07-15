@@ -1,59 +1,63 @@
-Vue.component(`scarlet-subscriptions-card`, {
-  template: `
-  <div class="card">
-    <header class="card-header">
-      <p class="card-header-title">
-        {{title}}
-      </p>
-    </header>
-    <div class="card-content">
-      <div class="content">
+import { ScarletElement } from '../js/ScarletElement.js'
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th>id</th>
-              <th>topic</th>
-            </tr>
-          </thead>
+class ScarletSubscriptionsCard extends ScarletElement {
 
-          <tbody v-for="subscription in subscriptions">
-            <tr>
-              <th>{{subscription.id}}</th>
-              <td>{{subscription.topic}}</td>
-            </tr>
-          </tbody>
-        </table>
-
-      </div>
-    </div>
-    <footer class="card-footer">
-      <!--footer-->
-    </footer>
-  </div>
-  `,
-  data() {
-    return {
-      title: "Subscriptions",
-      subscriptions: null,
-      timer:null
-    }
-  },
-  methods: {
-    populateSubscriptionsList: function()  {
-      fetch('/subscriptions')
-        .then(response => response.json())
-        .then(data => {
-          this.subscriptions = data.subscriptions
-        })
-    }
-  },
-  mounted() {
-    console.log("⚡️ the scarlet-subscriptions-card vue is mounted")
-    //TODO: authentication and token
-    this.$root.$emit("ping", "subscriptions loaded")
-
-    this.timer = setInterval(this.populateSubscriptionsList, 3000)
-
+  constructor() {
+    super()
+    this.styleSheets = [window.chota]
+    this.subscriptions = []
   }
-})
+
+  getData()  {
+    return fetch('/subscriptions')
+      .then(response => response.json())
+      .then(data => {
+        this.subscriptions = data.subscriptions
+      })
+  }
+
+  initialize() {
+    this.getData().then(_ => this.render())
+    this.timer = setInterval(() => this.getData().then(_ => this.render()), 3000)
+  }
+
+  getRows(subscriptions) {
+    return subscriptions.map(subscription => `
+        <tr>
+            <th>${subscription.id}</th>
+            <td>${subscription.topic}</td>
+        </tr>
+        `
+    ).join("")
+  }
+
+  render() {
+    return this.html(`
+      <div class="card">
+        <header>
+          <h4>Subscriptions</h4>
+        </header>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Topic</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${this.getRows(this.subscriptions)}
+            </tbody>
+          </table>
+
+        <footer class="is-right">
+          <!--footer-->
+        </footer>
+      </div>
+		`)
+  }
+
+}
+
+customElements.define('scarlet-subscriptions-card', ScarletSubscriptionsCard)
