@@ -22,7 +22,7 @@ Vue.component(`scarlet-panel`, {
     let tabs = document.querySelectorAll('.tabs li');
     let tabsContent = document.querySelectorAll('.tab-content');
 
-    let deactvateAllTabs = _ => {
+    let deactivateAllTabs = _ => {
       tabs.forEach( (tab) => {
         tab.classList.remove('is-active');
       });
@@ -44,7 +44,7 @@ Vue.component(`scarlet-panel`, {
 
     tabs.forEach(function (tab) {
       tab.addEventListener('click', () => {
-        deactvateAllTabs();
+        deactivateAllTabs();
         hideTabsContent();
         tab.classList.add('is-active');
         activateTabsContent(tab);
