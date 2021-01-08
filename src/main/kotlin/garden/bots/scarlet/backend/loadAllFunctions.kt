@@ -24,6 +24,7 @@ fun loadAllFunctionsAndCompile(functions: MutableMap<String, Function>) {
             /* === 🙂 Success === */
             println("function ${currentFunction.name} [${currentFunction.language}] is compiled")
           }
+
       }
     }
 
