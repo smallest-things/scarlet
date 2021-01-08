@@ -15,18 +15,14 @@ fun loadAllEventsAndCompile(events: MutableMap<String, Function>) {
           events[key] = value
           val currentEvent: Function = value
 
-          compileFunction(currentEvent.code, currentEvent.language).let { compilationResult ->
-            when {
-              /* === 😡 Failure === */
-              compilationResult.isFailure -> { // compilation error
-                println(result.exceptionOrNull()?.message)
-              }
-              /* === 🙂 Success === */
-              compilationResult.isSuccess -> { // compilation is OK
-                println("event ${currentEvent.name} [${currentEvent.language}] is compiled")
-              }
+          compileFunction(currentEvent.code, currentEvent.language)
+            .onFailure { /* === 😡 Failure === */
+              println(result.exceptionOrNull()?.message)
             }
-          }
+            .onSuccess { /* === 🙂 Success === */
+              println("event ${currentEvent.name} [${currentEvent.language}] is compiled")
+            }
+
         }
       }
       else -> {
