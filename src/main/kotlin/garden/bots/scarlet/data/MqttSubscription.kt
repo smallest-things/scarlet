@@ -7,3 +7,4 @@ data class MqttSubscription(
   val topic:String,
   val endpoint: MqttEndpoint
 ) {}
+

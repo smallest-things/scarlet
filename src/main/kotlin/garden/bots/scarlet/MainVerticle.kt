@@ -44,7 +44,7 @@ class MainVerticle : AbstractVerticle() {
     val adminToken = System.getenv("SCARLET_ADMIN_TOKEN") ?: ""
     // use it like that: export SCARLET_ADMIN_TOKEN="tada"; java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
     // TODO: implement https and mqtts
-
+    
     initializeStorage().let {
       when {
         it.isFailure -> {
