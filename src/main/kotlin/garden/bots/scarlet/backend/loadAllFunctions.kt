@@ -18,18 +18,14 @@ fun loadAllFunctionsAndCompile(functions: MutableMap<String, Function>) {
 
           val currentFunction: Function = value
 
-          compileFunction(currentFunction.code, currentFunction.language).let { compilationResult ->
-            when {
-              /* === 😡 Failure === */
-              compilationResult.isFailure -> { // compilation error
-                println(result.exceptionOrNull()?.message)
-              }
-              /* === 🙂 Success === */
-              compilationResult.isSuccess -> { // compilation is OK
-                println("function ${currentFunction.name} [${currentFunction.language}] is compiled")
-              }
+          compileFunction(currentFunction.code, currentFunction.language)
+            .onFailure { /* === 😡 Failure === */
+              println(result.exceptionOrNull()?.message)
             }
-          }
+            .onSuccess { /* === 🙂 Success === */
+              println("function ${currentFunction.name} [${currentFunction.language}] is compiled")
+            }
+
         }
 
       }
