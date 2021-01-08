@@ -11,24 +11,18 @@ fun createAddFunctionRoute(router: Router, functions: MutableMap<String, Functio
 
   // add a function
   router.post("/functions").handler { context ->
+    //println(context.bodyAsJson)
+    checkAdminToken(adminToken, context)
+      .onFailure { throwable ->
+        context.response().putHeader("content-type", "application/json;charset=UTF-8")
+          .end(json { obj("error" to throwable.message) }.encodePrettily())
+      }
+      .onSuccess {
+        println("😀 success")
+        val defaultFunctionLanguage = "js"
+        val defaultFunctionName = "hello"
 
-    checkAdminToken(adminToken, context).let { tokenCheck ->
-      when {
-        /* === 😡 Failure === */
-        tokenCheck.isFailure -> {
-          context.response().putHeader("content-type", "application/json;charset=UTF-8")
-            .end(
-              json {
-                obj("error" to "😡 bad token")
-              }.encodePrettily()
-            )
-        }
-        /* === 🙂 Success === */
-        tokenCheck.isSuccess -> {
-          val defaultFunctionLanguage = "js"
-          val defaultFunctionName = "hello"
-
-          val defaultFunctionCode = """
+        val defaultFunctionCode = """
             function hello(params) {
               return {
                 message: "👋 Hello World 🌍",
@@ -36,51 +30,46 @@ fun createAddFunctionRoute(router: Router, functions: MutableMap<String, Functio
             }
           """.trimIndent()
 
-          val params = context.bodyAsJson
-          //TODO: check structure of params
-          val functionName = params.getString("name") ?: defaultFunctionName
-          val functionLanguage = params.getString("language") ?:defaultFunctionLanguage
-          val functionCode = params.getString("code") ?: defaultFunctionCode
-          val functionVersion = params.getString("version") ?: "0.0.0"
+        val params = context.bodyAsJson
+        //TODO: check structure of params
+        val functionName = params.getString("name") ?: defaultFunctionName
+        val functionLanguage = params.getString("language") ?:defaultFunctionLanguage
+        val functionCode = params.getString("code") ?: defaultFunctionCode
+        val functionVersion = params.getString("version") ?: "0.0.0"
 
-          val currentFunction: Function = Function(
-            functionName,
-            functionLanguage,
-            functionCode,
-            functionVersion
-          )
+        val currentFunction = Function(
+          functionName,
+          functionLanguage,
+          functionCode,
+          functionVersion
+        )
 
-          compileFunction(functionCode, functionLanguage).let { result ->
-            when {
-              /* === 😡 Failure === */
-              result.isFailure -> { // compilation error
-                context.response().putHeader("content-type", "application/json;charset=UTF-8")
-                  .end(
-                    json {
-                      obj("error" to result.exceptionOrNull()?.message)
-                    }.encodePrettily()
-                  )
-              }
-              /* === 🙂 Success === */
-              result.isSuccess -> { // compilation is OK
-                //functions.put("$functionName:$functionVersion", currentFunction)
-                functions.put(functionName, currentFunction)
+        println(functionLanguage)
+        println(functionCode)
 
-                // persistence of the function
-                saveFunction(currentFunction)
-
-                context.response().putHeader("content-type", "application/json;charset=UTF-8")
-                  .end(
-                    json {
-                      obj("result" to "function $functionName [$functionLanguage] is compiled")
-                    }.encodePrettily()
-                  )
-              }
-            }
+        compileFunction(functionCode, functionLanguage)
+          .onFailure { throwable ->
+            println("😡 compilation !!!")
+            /* === 😡 Failure === */
+            context.response().putHeader("content-type", "application/json;charset=UTF-8")
+              .end(
+                json {
+                  obj("error" to throwable.message)
+                }.encodePrettily()
+              )
           }
-        }
-      }
-    }
+          .onSuccess {
+            /* === 🙂 Success === */
+            functions[functionName] = currentFunction
+            saveFunction(currentFunction)
 
+            context.response().putHeader("content-type", "application/json;charset=UTF-8")
+              .end(
+                json {
+                  obj("result" to "function $functionName [$functionLanguage] is compiled")
+                }.encodePrettily()
+              )
+          }
+      }
   }
 }

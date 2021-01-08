@@ -10,27 +10,23 @@ fun createGetSubscriptionsRoute(router: Router, subscriptions: MutableMap<String
 
   router.get("/subscriptions").handler { context ->
 
-    checkAdminToken(adminToken, context).let { tockenCheck ->
-      when {
+    checkAdminToken(adminToken, context)
+      .onFailure { throwable ->
         /* === 😡 Failure === */
-        tockenCheck.isFailure -> {
-          context.response().putHeader("content-type", "application/json;charset=UTF-8")
-            .end(
-              json {
-                obj("error" to "😡 bad token")
-              }.encodePrettily()
-            )
-        }
-        /* === 🙂 Success === */
-        tockenCheck.isSuccess -> {
-          subscriptions.toList()
-          context.response().putHeader("content-type", "application/json;charset=UTF-8")
-            .end(
-              json { obj("subscriptions" to subscriptions.map { entry -> entry.value })}.encodePrettily()
-            )
-        }
+        context.response().putHeader("content-type", "application/json;charset=UTF-8")
+          .end(
+            json { obj("error" to throwable.message) }.encodePrettily()
+          )
       }
-    }
+      .onSuccess {
+        /* === 🙂 Success === */
+        //subscriptions.toList() // => 🤔 ... but why?
+        context.response().putHeader("content-type", "application/json;charset=UTF-8")
+          .end(
+            json { obj("subscriptions" to subscriptions.map { entry -> entry.value })}.encodePrettily()
+          )
+      }
+
   }
 
   // TODO add health check etc ...

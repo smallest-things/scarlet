@@ -11,47 +11,32 @@ fun createExecuteFunctionRoute(router: Router, functions: MutableMap<String, Fun
   // add version ? How to deal with version (create an unique ID)
   router.post("/execute/:function_name").handler { context ->
 
-    checkAdminToken(adminToken, context).let { tokenCheck ->
-      when {
-        /* === 😡 Failure === */
-         tokenCheck.isFailure -> {
+    checkAdminToken(adminToken, context)
+      .onFailure { /* === 😡 Failure === */
+        context.response()
+          .putHeader("content-type", "application/json;charset=UTF-8")
+          .end(json { obj("error" to "😡 bad token") }.encodePrettily())
+      }.onSuccess { /* === 🙂 Success === */
+        val params = context.bodyAsJson
+        //TODO: check structure of params
+        // call the function
+        val functionName=context.request().getParam("function_name")
+
+        invokeFunction(
+          functionName,
+          params,
+          functions[functionName]?.language
+        ).onFailure { /* === 😡 Failure === */ // execution error
           context.response().putHeader("content-type", "application/json;charset=UTF-8")
             .end(
               json {
-                obj("error" to "😡 bad token")
+                obj("error" to it.message)
               }.encodePrettily()
             )
+        }.onSuccess { /* === 🙂 Success === */ // execution is OK
+          context.response().putHeader("content-type", "application/json;charset=UTF-8")
+            .end(it.toString())
         }
-        /* === 🙂 Success === */
-         tokenCheck.isSuccess -> {
-          val params = context.bodyAsJson
-          //TODO: check structure of params
-          // call the function
-          val functionName=context.request().getParam("function_name")
-          invokeFunction(
-            functionName,
-            params,
-            functions.get(functionName)?.language
-          ).let { result ->
-            when {
-              /* === 😡 Failure === */
-              result.isFailure -> { // execution error
-                context.response().putHeader("content-type", "application/json;charset=UTF-8")
-                  .end(
-                    json {
-                      obj("error" to result.exceptionOrNull()?.message)
-                    }.encodePrettily()
-                  )
-              }
-              /* === 🙂 Success === */
-              result.isSuccess -> { // execution is OK
-                context.response().putHeader("content-type", "application/json;charset=UTF-8")
-                  .end(result.getOrNull().toString())
-              }
-            }
-          }
-        } // end of isSuccess
-      } // end of when
-    } // end of let
+      }
   }
 }

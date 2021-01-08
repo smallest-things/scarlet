@@ -6,7 +6,7 @@ HOST="${DOMAIN}:${HTTP_PORT}"
 read -d '' CODE << EOF
 function hello(params) {
   return {
-    message: "Hello World",
+    message: "🎃 Hello World",
     params: params.getString("name")
   }
 }
@@ -15,5 +15,5 @@ echo "$CODE"
 
 http POST http://${HOST}/functions name="hello" \
   language="js" \
-  version="0.0.0" \
+  version="1.1.3" \
   code="$CODE"

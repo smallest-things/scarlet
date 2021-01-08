@@ -15,7 +15,7 @@ class LoggingHandler : Handler<RoutingContext> {
     logger.info("BEGIN : $routeUri")
     context.response().endHandler {
       chrono.stop()
-      logger.info("END : ${routeUri} - time ${chrono.getTimeSpentMs()} ms")
+      logger.info("END : $routeUri - time ${chrono.getTimeSpentMs()} ms")
     }
     context.next()
   }

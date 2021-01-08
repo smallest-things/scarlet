@@ -5,6 +5,7 @@ client.on('connect', _ => {
   client.subscribe('buddies', (err) => {
     if (!err) {
       client.publish('buddies', JSON.stringify({function:"hello", params:{name:"bob"}}))
+      client.publish('buddies', JSON.stringify({function:"yo", params:{name:"bobby"}}))
     }
   })
 })

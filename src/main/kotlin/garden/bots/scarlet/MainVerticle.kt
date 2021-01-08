@@ -17,6 +17,8 @@ import io.vertx.ext.web.Router
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.mqtt.MqttServer
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class MainVerticle : AbstractVerticle() {
 
@@ -27,6 +29,8 @@ class MainVerticle : AbstractVerticle() {
   }
 
   override fun start(startPromise: Promise<Void>) {
+    Logger.getLogger("io.vertx.core.impl.BlockedThreadChecker").setLevel(Level.OFF)
+
     val httpServer = vertx.createHttpServer()
     val mqttServer = MqttServer.create(vertx)
     val router = Router.router(vertx)
@@ -37,35 +41,30 @@ class MainVerticle : AbstractVerticle() {
     val mqttSubscriptions: MutableMap<String, MqttSubscription> = HashMap<String, MqttSubscription>()
     val mqttClients: MutableMap<String, MqttClient> = HashMap<String, MqttClient>()
 
-
     val httpPort = System.getenv("HTTP_PORT")?.toInt() ?: 8080
     val mqttPort = System.getenv("MQTT_PORT")?.toInt() ?: 1883
 
     val adminToken = System.getenv("SCARLET_ADMIN_TOKEN") ?: ""
     // use it like that: export SCARLET_ADMIN_TOKEN="tada"; java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
     // TODO: implement https and mqtts
-    
-    initializeStorage().let {
-      when {
-        it.isFailure -> {
-          TODO()
-        }
-        it.isSuccess -> {
-          loadAllEventsAndCompile(events)
-          loadAllFunctionsAndCompile(functions)
 
-          /* === 👋 Trigger initialize === */
-          triggerEvent("initialize", json { obj("message" to "initialize") }, events).let {
-            when {
-              it.isFailure -> {}
-              it.isSuccess -> {}
-            }
-          }
-          /* === end of trigger === */
-        }
-        else -> { TODO() }
+    initializeStorage()
+      .onFailure {
+        println("😡 initializeStorage: ${it.message}")
       }
-    }
+      .onSuccess {
+        loadAllEventsAndCompile(events)
+        loadAllFunctionsAndCompile(functions)
+        /* === 👋 Trigger initialize === */
+        triggerEvent("initialize", json { obj("message" to "initialize") }, events)
+          .onFailure {
+            println("😡 triggerEvent: initialize | ${it.message}")
+          }
+          .onSuccess {
+            println("🙂 triggerEvent: initialize")
+          }
+        /* === end of trigger === */
+      }
 
     basicHandlers(router)
     createAddFunctionRoute(router, functions, adminToken)
@@ -88,12 +87,13 @@ class MainVerticle : AbstractVerticle() {
             println("🌍 Scarlet -=8< http server started on port $httpPort")
 
             /* === 👋 Trigger httpStarted === */
-            triggerEvent("httpStarted", httpServer, events).let {
-              when {
-                it.isFailure -> {}
-                it.isSuccess -> {}
+            triggerEvent("httpStarted", httpServer, events)
+              .onFailure {
+                println("😡 triggerEvent: httpStarted | ${it.message}")
               }
-            }
+              .onSuccess {
+                println("🙂 triggerEvent: httpStarted")
+              }
             /* === end of trigger === */
 
             // 🚀 start mqtt server
@@ -107,12 +107,13 @@ class MainVerticle : AbstractVerticle() {
                   println("📡 Scarlet -=8< mqtt server started on port $mqttPort")
 
                   /* === 👋 Trigger mqttStarted === */
-                  triggerEvent("mqttStarted", mqttServer, events).let {
-                    when {
-                      it.isFailure -> {}
-                      it.isSuccess -> {}
+                  triggerEvent("mqttStarted", mqttServer, events)
+                    .onFailure {
+                      println("😡 triggerEvent: mqttStarted | ${it.message}")
                     }
-                  }
+                    .onSuccess {
+                      println("🙂 triggerEvent: mqttStarted")
+                    }
                   /* === end of trigger === */
 
                   startPromise.complete()

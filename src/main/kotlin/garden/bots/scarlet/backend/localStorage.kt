@@ -12,11 +12,11 @@ const val mqttClientsPath = "clients"
 const val mqttSubscriptionsPath = "subscriptions"
 const val eventsPath = "events"
 
-val languages: HashMap<String, String> = hashMapOf("js" to "js", "ruby" to "rb", "python" to "py")
-val extensions: HashMap<String, String> = hashMapOf("js" to "js", "rb" to "ruby", "py" to "python")
+val languages: HashMap<String, String> = hashMapOf("js" to "js", "ruby" to "rb", "python" to "py", "kotlin" to "kt")
+val extensions: HashMap<String, String> = hashMapOf("js" to "js", "rb" to "ruby", "py" to "python", "kt" to "kotlin")
 
 fun initializeStorage() : Result<Boolean> {
-  return try {
+  return Result.runCatching {
     val storageDirectory = File(storagePath)
     val functionsDirectory = File("${storagePath}/${functionsPath}")
     val clientsDirectory = File("${storagePath}/${mqttClientsPath}")
@@ -28,52 +28,42 @@ fun initializeStorage() : Result<Boolean> {
     clientsDirectory.mkdir()
     eventsDirectory.mkdir()
     subscriptionsDirectory.mkdir()
+    true
+  }
 
-    Result.success(true)
-  } catch (exception : Exception) {
-    Result.failure(exception)
+}
+
+fun saveFunction(function: Function) : Result<Function>{
+  return Result.runCatching {
+    File("${storagePath}/${functionsPath}/${function.name}@${function.version}.${languages[function.language]}").writeText(function.code)
+    function
   }
 }
 
-fun saveFunction(function: garden.bots.scarlet.data.Function) : Result<garden.bots.scarlet.data.Function>{
-  return try {
-    File("${storagePath}/${functionsPath}/${function.name}@${function.version}.${languages.get(function.language)}").writeText(function.code)
-    Result.success(function)
-  } catch (exception: Exception) {
-    Result.failure(exception)
+fun saveEvent(function: Function) : Result<Function>{
+  return Result.runCatching {
+    File("${storagePath}/${eventsPath}/${function.name}@${function.version}.${languages[function.language]}").writeText(function.code)
+    function
   }
 }
 
-fun saveEvent(function: garden.bots.scarlet.data.Function) : Result<garden.bots.scarlet.data.Function>{
-  return try {
-    File("${storagePath}/${eventsPath}/${function.name}@${function.version}.${languages.get(function.language)}").writeText(function.code)
-    Result.success(function)
-  } catch (exception: Exception) {
-    Result.failure(exception)
-  }
-}
-
-fun saveMqttClient(mqttClient: garden.bots.scarlet.data.MqttClient) : Result<garden.bots.scarlet.data.MqttClient>{
-  return try {
+fun saveMqttClient(mqttClient: MqttClient) : Result<MqttClient>{
+  return Result.runCatching {
     File("${storagePath}/${mqttClientsPath}/${mqttClient.id}").writeText(mqttClient.toString())
-    Result.success(mqttClient)
-  } catch (exception: Exception) {
-    Result.failure(exception)
+    mqttClient
   }
 }
 
-fun saveMqttSubscription(mqttSubscription: garden.bots.scarlet.data.MqttSubscription) : Result<garden.bots.scarlet.data.MqttSubscription>{
-  return try {
+fun saveMqttSubscription(mqttSubscription: MqttSubscription) : Result<MqttSubscription>{
+  return Result.runCatching {
     File("${storagePath}/${mqttSubscriptionsPath}/${mqttSubscription.id}").writeText(mqttSubscription.toString())
-    Result.success(mqttSubscription)
-  } catch (exception: Exception) {
-    Result.failure(exception)
+    mqttSubscription
   }
 }
 
 fun getAllFunctions() : Result<MutableMap<String, Function>> {
-  val functions: MutableMap<String, Function> = HashMap<String, Function>()
-  return try {
+  val functions: MutableMap<String, Function> = HashMap()
+  return Result.runCatching {
     File("${storagePath}/${functionsPath}").walk().forEach {
       when {
         it.isFile -> {
@@ -81,10 +71,10 @@ fun getAllFunctions() : Result<MutableMap<String, Function>> {
           val functionName = row[0]
           val functionExtension = it.canonicalFile.extension
           val functionVersion = row[1].split(functionExtension)[0]
-          val functionLanguage = extensions.get(functionExtension)
+          val functionLanguage = extensions[functionExtension]
           val functionCode = it.readText(Charsets.UTF_8)
 
-          val currentFunction: Function = Function(
+          val currentFunction = Function(
             functionName,
             functionLanguage.orEmpty(),
             functionCode,
@@ -94,16 +84,14 @@ fun getAllFunctions() : Result<MutableMap<String, Function>> {
         }
       }
     }
-    Result.success(functions)
-  } catch (exception : Exception) {
-    Result.failure(exception)
+    functions
   }
 }
 
 // make filters on initialize, httpStarted, mqttStarted
 fun getAllEvents() : Result<MutableMap<String, Function>> {
-  val events: MutableMap<String, Function> = HashMap<String, Function>()
-  return try {
+  val events: MutableMap<String, Function> = HashMap()
+  return Result.runCatching {
     File("${storagePath}/${eventsPath}").walk().forEach {
       when {
         it.isFile -> {
@@ -111,10 +99,10 @@ fun getAllEvents() : Result<MutableMap<String, Function>> {
           val eventName = row[0]
           val eventExtension = it.canonicalFile.extension
           val eventVersion = row[1].split(eventExtension)[0]
-          val eventLanguage = extensions.get(eventExtension)
+          val eventLanguage = extensions[eventExtension]
           val eventCode = it.readText(Charsets.UTF_8)
 
-          val currentFunction: Function = Function(
+          val currentFunction = Function(
             eventName,
             eventLanguage.orEmpty(),
             eventCode,
@@ -124,9 +112,7 @@ fun getAllEvents() : Result<MutableMap<String, Function>> {
         }
       }
     }
-    Result.success(events)
-  } catch (exception : Exception) {
-    Result.failure(exception)
+    events
   }
 }
 

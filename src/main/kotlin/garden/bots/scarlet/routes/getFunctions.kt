@@ -10,27 +10,22 @@ fun createGetFunctionsRoute(router: Router, functions: MutableMap<String, Functi
 
   router.get("/functions").handler { context ->
 
-    checkAdminToken(adminToken, context).let { tockenCheck ->
-      when {
+    checkAdminToken(adminToken, context)
+      .onFailure { throwable ->
         /* === 😡 Failure === */
-        tockenCheck.isFailure -> {
-          context.response().putHeader("content-type", "application/json;charset=UTF-8")
-            .end(
-              json {
-                obj("error" to "😡 bad token")
-              }.encodePrettily()
-            )
-        }
-        /* === 🙂 Success === */
-        tockenCheck.isSuccess -> {
-          functions.toList()
-          context.response().putHeader("content-type", "application/json;charset=UTF-8")
-            .end(
-              json { obj("functions" to functions.map { entry -> entry.value })}.encodePrettily()
-            )
-        }
+        context.response().putHeader("content-type", "application/json;charset=UTF-8")
+          .end(
+            json { obj("error" to throwable.message) }.encodePrettily()
+          )
       }
-    }
+      .onSuccess {
+        /* === 🙂 Success === */
+        //functions.toList()
+        context.response().putHeader("content-type", "application/json;charset=UTF-8")
+          .end(
+            json { obj("functions" to functions.map { entry -> entry.value })}.encodePrettily()
+          )
+      }
   }
 
   // TODO add health check etc ...

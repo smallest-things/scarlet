@@ -4,8 +4,9 @@ import garden.bots.scarlet.data.Function
 import garden.bots.scarlet.data.MqttClient
 import garden.bots.scarlet.data.MqttSubscription
 import garden.bots.scarlet.events.triggerEvent
-import garden.bots.scarlet.helpers.executeIfFunctionCall
+import garden.bots.scarlet.helpers.executeFunction
 import garden.bots.scarlet.helpers.getJsonPayLoad
+import garden.bots.scarlet.helpers.isFunctionCall
 import io.netty.handler.codec.mqtt.MqttQoS
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
@@ -15,9 +16,10 @@ import io.vertx.mqtt.MqttAuth
 import io.vertx.mqtt.MqttEndpoint
 import io.vertx.mqtt.MqttServer
 
-data class MqttParams(val endpoint: MqttEndpoint, val message: io.vertx.mqtt.messages.MqttPublishMessage, val messagePayLoad:String, val jsonResult: JsonObject, val mqttSubscriptions: MutableMap<String, MqttSubscription>)
+data class MqttParams(val endpoint: MqttEndpoint, val message: io.vertx.mqtt.messages.MqttPublishMessage, val messagePayLoad:String, val mqttSubscriptions: MutableMap<String, MqttSubscription>)
 
 fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, MqttClient>, mqttSubscriptions: MutableMap<String, MqttSubscription>, functions: MutableMap<String, Function>, events: MutableMap<String, Function>) {
+
   mqttServer.endpointHandler { endpoint ->
     // shows main connect info
     println("MQTT client [${endpoint.clientIdentifier()}] request to connect, clean session = ${endpoint.isCleanSession()}")
@@ -26,14 +28,14 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
     val mqttClient = MqttClient(endpoint.clientIdentifier(), endpoint)
     mqttClients[endpoint.clientIdentifier()] = mqttClient
 
-
     /* === 👋 Trigger mqttOnConnect === */
-    triggerEvent("mqttOnConnect", mqttClient, events).let {
-      when {
-        it.isFailure -> {}
-        it.isSuccess -> {}
+    triggerEvent("mqttOnConnect", mqttClient, events)
+      .onFailure {
+        // 🚧
       }
-    }
+      .onSuccess {
+        // 🚧
+      }
     /* === end of trigger === */
 
     when(endpoint.auth()) {
@@ -54,12 +56,13 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
       //TODO: remove from the list
 
       /* === 👋 Trigger mqttOnDisConnect === */
-      triggerEvent("mqttOnDisConnect", endpoint, events).let {
-        when {
-          it.isFailure -> {}
-          it.isSuccess -> {}
+      triggerEvent("mqttOnDisConnect", endpoint, events)
+        .onFailure {
+          // 🚧
         }
-      }
+        .onSuccess {
+          // 🚧
+        }
       /* === end of trigger === */
     }
 
@@ -76,12 +79,13 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
         //TODO: api to get the list of the clients
 
         /* === 👋 Trigger mqttOnSubscribe === */
-        triggerEvent("mqttOnSubscribe", subscription, events).let {
-          when {
-            it.isFailure -> {}
-            it.isSuccess -> {}
+        triggerEvent("mqttOnSubscribe", subscription, events)
+          .onFailure {
+            // 🚧
           }
-        }
+          .onSuccess {
+            // 🚧
+          }
         /* === end of trigger === */
       }
       // ack the subscriptions request
@@ -91,66 +95,66 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
     // handling incoming published messages
     endpoint.publishHandler { message ->
       val messagePayLoad = message.payload().toString(java.nio.charset.Charset.defaultCharset())
-      println("Just received message [${messagePayLoad}] with QoS [${message.qosLevel()}] on topic [${message.topicName()}]")
-
-      val jsonResult: JsonObject = getJsonPayLoad(messagePayLoad).let { result ->
-        when {
-          result.isFailure -> { // this is not a Json payload, transform the message to Json Object
-            json {
-              obj("message" to messagePayLoad)
-            }
-          }
-          result.isSuccess -> { // this is a payload message
-            executeIfFunctionCall(result.getOrNull(), functions).let { executeResult ->
-              when {
-                executeResult.isFailure -> { // execution error
-                  json {
-                    obj("error" to executeResult.exceptionOrNull()?.message)
-                  }
-                }
-                executeResult.isSuccess -> { // execution result
-                  println("🖐 result of the function call: $executeResult")
-                  json {
-                    obj("result" to executeResult.getOrNull().toString())
-                  }
-                }
-                else -> {
-                  json {
-                    obj("else_error" to "🥶 Huston?")
-                  }
-                }
-              }
-            }
-          }
-          else -> {
-            json {
-              obj("else_error" to "🥶 Huston?")
-            }
-          }
-        }
-      } // End of getJsonPayLoad
-
-      /* === 👋 Trigger mqttOnMessage === */
-      triggerEvent("mqttOnMessage", MqttParams(endpoint, message, messagePayLoad, jsonResult, mqttSubscriptions), events).let {
-        when {
-          it.isFailure -> {}
-          it.isSuccess -> {}
-        }
-      }
-      /* === end of trigger === */
+      println("🟠 Just received message [${messagePayLoad}] with QoS [${message.qosLevel()}] on topic [${message.topicName()}]")
 
       /* --- dispatch messages to all subscribed clients --- */
-      mqttSubscriptions.forEach { id, mqttSubscription ->
-        when(mqttSubscription.topic==message.topicName() && mqttSubscription.endpoint.isConnected()) {
-          false -> {
-            // nothing to do right now
-          }
-          true -> {
-            mqttSubscription.endpoint.publish(message.topicName(), Buffer.buffer(jsonResult.toString()), message.qosLevel(), false, false)
-            // TODO add the other handers
+      val dispatchMessage = { jsonResult: JsonObject ->
+        mqttSubscriptions.forEach { (id, mqttSubscription) ->
+          when(mqttSubscription.topic==message.topicName() && mqttSubscription.endpoint.isConnected) {
+            false -> {
+              // nothing to do right now
+            }
+            true -> {
+              mqttSubscription.endpoint.publish(message.topicName(), Buffer.buffer(jsonResult.toString()), message.qosLevel(), false, false)
+              // TODO add the other handlers
+            }
           }
         }
       }
+
+      /* --- Check and Dispatch --- */
+      // check the message payload
+      // and then all messages are dispatched with a json format:
+      // if it's a function call the payload will be:
+      // { result: something }
+      // else:
+      // { message: something }
+      getJsonPayLoad(messagePayLoad)
+        .onFailure {
+          // this is not a Json payload, this is a simple message
+          println("🟦 simple message $messagePayLoad")
+          dispatchMessage(json { obj("message" to messagePayLoad) })
+        }
+        .onSuccess {  jsonObject ->
+          // this is a json payload, then check if it's a call of function
+          when(isFunctionCall(jsonObject)) {
+            false -> {
+              println("🟪 json message $jsonObject")
+              dispatchMessage(jsonObject)
+            }
+            true -> { // this is a function call
+              executeFunction(jsonObject, functions)
+                .onFailure {throwable ->
+                  println("🟥 error with jsonObject $jsonObject")
+                  dispatchMessage(json { obj("error" to throwable.message) })
+                }
+                .onSuccess {any ->
+                  println("🟧 result of the function call: $any")
+                  dispatchMessage(json { obj("result" to any.toString()) })
+                }
+            }
+          }
+        }
+
+      /* === 👋 Trigger mqttOnMessage === */
+      triggerEvent("mqttOnMessage", MqttParams(endpoint, message, messagePayLoad, mqttSubscriptions), events)
+        .onFailure {
+          // 🚧
+        }
+        .onSuccess {
+          // 🚧
+        }
+      /* === end of trigger === */
 
       when(message.qosLevel()) {
         MqttQoS.AT_LEAST_ONCE -> {
@@ -163,7 +167,6 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
           // 🤔 TODO work on QoS
         }
       }
-
     }.publishReleaseHandler { messageId ->
       endpoint.publishComplete(messageId)
     }
