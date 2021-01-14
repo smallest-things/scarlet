@@ -18,6 +18,7 @@ import io.vertx.mqtt.MqttServer
 
 data class MqttParams(val endpoint: MqttEndpoint, val message: io.vertx.mqtt.messages.MqttPublishMessage, val messagePayLoad:String, val mqttSubscriptions: MutableMap<String, MqttSubscription>)
 
+// 🤔 private?
 fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, MqttClient>, mqttSubscriptions: MutableMap<String, MqttSubscription>, functions: MutableMap<String, Function>, events: MutableMap<String, Function>) {
 
   mqttServer.endpointHandler { endpoint ->
