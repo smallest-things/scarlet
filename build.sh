@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # build jar
 mvn clean package
 

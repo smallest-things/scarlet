@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # run it like that:
 # export DOMAIN="myhome.test"; export HTTP_PORT=9090; ./all_functions.sh
