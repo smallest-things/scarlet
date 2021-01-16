@@ -15,7 +15,5 @@ build:scarlet:jar:
       - target/*.jar
     expire_in: 1 week
   script:
-    - mvn compile assembly:single
-
-
+    - mvn clean package
 
