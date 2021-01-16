@@ -26,14 +26,22 @@ build:scarlet:jar:
 #TODO: automate the release
 build:scarlet:beta:version:
   stage: build
+  variables:
+    file_name: scarlet-0.0.0-SNAPSHOT-fat.jar
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   artifacts:
     paths:
-      - target/*-fat.jar
+      - target/${file_name}
     expire_in: 1 hour
     #expire_in: never
   script:
-    #- mvn clean package
-    - curl --version
+    - mvn clean package
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file target/${file_name} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/scarlet/0.0.0/${file_name}"'
+
+
+
+
+
+
 
