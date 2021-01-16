@@ -28,7 +28,10 @@ beta-version:
   stage: build
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
+  artifacts:
+    paths:
+      - target/*-fat.jar
+    expire_in: never
   script:
-    - echo 'beta release job'
-    - mvn deploy -gs ./settings.xml
+    - mvn clean package
 

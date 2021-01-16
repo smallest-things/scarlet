@@ -22,30 +22,8 @@
     <junit-jupiter.version>5.4.0</junit-jupiter.version>
 
     <main.verticle>garden.bots.scarlet.MainVerticle</main.verticle>
-    <!-- 🦊 -->
-    <gitlabProjectId>19892014</gitlabProjectId>
-    <gitlabURL>https://gitlab.com/api/v4</gitlabURL>
+
   </properties>
-
-  <repositories>
-    <!-- 🦊 -->
-    <repository>
-        <id>gitlab-maven</id>
-        <url>${gitlabURL}/projects/${gitlabProjectId}/packages/maven</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <!-- 🦊 -->
-    <repository>
-        <id>gitlab-maven</id>
-        <url>${gitlabURL}/projects/${gitlabProjectId}/packages/maven</url>
-    </repository>
-    <snapshotRepository>
-        <id>gitlab-maven</id>
-        <url>${gitlabURL}/projects/${gitlabProjectId}/packages/maven</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
