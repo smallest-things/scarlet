@@ -10,8 +10,7 @@ fun triggerEvent(eventName: String, params: Any, events: MutableMap<String, Func
      events[eventName] != null -> {
       return invokeFunction(
         eventName,
-        params,
-        events[eventName]?.language
+        params
       ).onFailure { /* === 😡 Failure === */
         return Result.failure(it) // Exception(it.message)
       }.onSuccess { /* === 🙂 Success === */

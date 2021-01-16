@@ -15,14 +15,14 @@ fun loadAllEventsAndCompile(events: MutableMap<String, Function>) {
         events[key] = value
         val currentEvent: Function = value
 
-        compileFunction(currentEvent.code, currentEvent.language)
+        compileFunction(currentEvent.code)
           .onFailure { throwable ->
             /* === 😡 Failure === */
             println(throwable.message)
           }
           .onSuccess {
             /* === 🙂 Success === */
-            println("event ${currentEvent.name} [${currentEvent.language}] is compiled")
+            println("event ${currentEvent.name} is compiled")
           }
       }
     }

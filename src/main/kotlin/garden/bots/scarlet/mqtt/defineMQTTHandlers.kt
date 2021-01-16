@@ -13,24 +13,21 @@ import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.mqtt.MqttAuth
-import io.vertx.mqtt.MqttEndpoint
 import io.vertx.mqtt.MqttServer
-
-data class MqttParams(val endpoint: MqttEndpoint, val message: io.vertx.mqtt.messages.MqttPublishMessage, val messagePayLoad:String, val mqttSubscriptions: MutableMap<String, MqttSubscription>)
 
 // 🤔 private?
 fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, MqttClient>, mqttSubscriptions: MutableMap<String, MqttSubscription>, functions: MutableMap<String, Function>, events: MutableMap<String, Function>) {
 
   mqttServer.endpointHandler { endpoint ->
     // shows main connect info
-    println("MQTT client [${endpoint.clientIdentifier()}] request to connect, clean session = ${endpoint.isCleanSession()}")
+    println("MQTT client [${endpoint.clientIdentifier()}] request to connect, clean session = ${endpoint.isCleanSession}")
 
     /* add mqttclient to the clients list */
     val mqttClient = MqttClient(endpoint.clientIdentifier(), endpoint)
     mqttClients[endpoint.clientIdentifier()] = mqttClient
 
     /* === 👋 Trigger mqttOnConnect === */
-    triggerEvent("mqttOnConnect", mqttClient, events)
+    triggerEvent("mqttOnConnect", mqttClient.endpoint, events)
       .onFailure {
         // 🚧
       }
@@ -134,7 +131,7 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
               dispatchMessage(jsonObject)
             }
             true -> { // this is a function call
-              executeFunction(jsonObject, functions)
+              executeFunction(jsonObject)
                 .onFailure {throwable ->
                   println("🟥 error with jsonObject $jsonObject")
                   dispatchMessage(json { obj("error" to throwable.message) })
@@ -147,8 +144,9 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
           }
         }
 
+
       /* === 👋 Trigger mqttOnMessage === */
-      triggerEvent("mqttOnMessage", MqttParams(endpoint, message, messagePayLoad, mqttSubscriptions), events)
+      triggerEvent("mqttOnMessage", message, events)
         .onFailure {
           // 🚧
         }
