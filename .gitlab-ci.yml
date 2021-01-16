@@ -24,7 +24,7 @@ build:scarlet:jar:
     - mvn clean package
 
 # TODO: 
-#   - tag
+#   - use tags (+rule)
 #   - automate the release
 
 build:scarlet:beta:version:
