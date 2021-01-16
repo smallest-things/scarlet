@@ -21,8 +21,6 @@
     <vertx.version>3.9.0</vertx.version>
     <junit-jupiter.version>5.4.0</junit-jupiter.version>
 
-    <arrow.version>0.10.4</arrow.version>
-
     <main.verticle>garden.bots.scarlet.MainVerticle</main.verticle>
   </properties>
 
@@ -41,10 +39,6 @@
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
       <artifactId>vertx-lang-kotlin</artifactId>
     </dependency>
     <!--
@@ -53,13 +47,10 @@
       <artifactId>vertx-redis-client</artifactId>
     </dependency>
     -->
-
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-mqtt</artifactId>
     </dependency>
-
-
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-junit5</artifactId>
@@ -79,32 +70,14 @@
       <scope>test</scope>
     </dependency>
 
-
-    <!-- Graal VM -->
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-test</artifactId>
       <version>${kotlin.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.graalvm.sdk</groupId>
-      <artifactId>graal-sdk</artifactId>
-      <version>20.0.0</version>
-    </dependency>
-
 
     <!-- Kotlin Dependencies -->
-    <!--
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-test</artifactId>
-      <version>${kotlin.version}</version>
-      <scope>test</scope>
-    </dependency>
-    -->
-
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-compiler</artifactId>
@@ -140,8 +113,6 @@
       <artifactId>kotlin-scripting-compiler-embeddable</artifactId>
       <version>${kotlin.version}</version>
     </dependency>
-
-
 
   </dependencies>
 

@@ -15,14 +15,14 @@ fun loadAllFunctionsAndCompile(functions: MutableMap<String, Function>) {
         functions[key] = value
         val currentFunction: Function = value
 
-        compileFunction(currentFunction.code, currentFunction.language)
+        compileFunction(currentFunction.code)
           .onFailure { throwable ->
             /* === 😡 Failure === */
             println(throwable.message)
           }
           .onSuccess {
             /* === 🙂 Success === */
-            println("function ${currentFunction.name} [${currentFunction.language}] is compiled")
+            println("function ${currentFunction.name} is compiled")
           }
 
       }

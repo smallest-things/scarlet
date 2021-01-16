@@ -12,9 +12,6 @@ const val mqttClientsPath = "clients"
 const val mqttSubscriptionsPath = "subscriptions"
 const val eventsPath = "events"
 
-val languages: HashMap<String, String> = hashMapOf("js" to "js", "ruby" to "rb", "python" to "py", "kotlin" to "kt")
-val extensions: HashMap<String, String> = hashMapOf("js" to "js", "rb" to "ruby", "py" to "python", "kt" to "kotlin")
-
 fun initializeStorage() : Result<Boolean> {
   return Result.runCatching {
     val storageDirectory = File(storagePath)
@@ -35,14 +32,14 @@ fun initializeStorage() : Result<Boolean> {
 
 fun saveFunction(function: Function) : Result<Function>{
   return Result.runCatching {
-    File("${storagePath}/${functionsPath}/${function.name}@${function.version}.${languages[function.language]}").writeText(function.code)
+    File("${storagePath}/${functionsPath}/${function.name}@${function.version}.kt").writeText(function.code)
     function
   }
 }
 
 fun saveEvent(function: Function) : Result<Function>{
   return Result.runCatching {
-    File("${storagePath}/${eventsPath}/${function.name}@${function.version}.${languages[function.language]}").writeText(function.code)
+    File("${storagePath}/${eventsPath}/${function.name}@${function.version}.kt").writeText(function.code)
     function
   }
 }
@@ -71,7 +68,7 @@ fun getAllFunctions() : Result<MutableMap<String, Function>> {
           val functionName = row[0]
           val functionExtension = it.canonicalFile.extension
           val functionVersion = row[1].split(functionExtension)[0]
-          val functionLanguage = extensions[functionExtension]
+          val functionLanguage = "kotlin"
           val functionCode = it.readText(Charsets.UTF_8)
 
           val currentFunction = Function(
@@ -99,7 +96,7 @@ fun getAllEvents() : Result<MutableMap<String, Function>> {
           val eventName = row[0]
           val eventExtension = it.canonicalFile.extension
           val eventVersion = row[1].split(eventExtension)[0]
-          val eventLanguage = extensions[eventExtension]
+          val eventLanguage = "kotlin"
           val eventCode = it.readText(Charsets.UTF_8)
 
           val currentFunction = Function(
