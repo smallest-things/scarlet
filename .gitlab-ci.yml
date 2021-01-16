@@ -31,7 +31,7 @@ build:scarlet:beta:version:
   stage: build
   variables:
     file_name: scarlet-0.0.0-SNAPSHOT-fat.jar
-    version: "0.0.0.beta"
+    version: "0.0.0"
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   artifacts:
@@ -44,15 +44,28 @@ build:scarlet:beta:version:
     # build the application
     mvn clean package
     echo "RELEASE_PATH=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/scarlet/${version}/${file_name}" > version.env
+    echo "VERSION=${version}" > version.env
     # then publish it to the generic registry
     curl --header "JOB-TOKEN:$CI_JOB_TOKEN" \
          --upload-file target/${file_name} \
          "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/scarlet/${version}/${file_name}"
 
 release:scarlet:beta:version:
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
   stage: release
+  variables: 
+    asset_link: |
+      {"name":"Scarlet v${VERSION}", "url":"${RELEASE_PATH}"}
   script: |
     echo "🚀 $RELEASE_PATH"
+    echo "📦 $VERSION"
+    release-cli create \
+      --name "Scarlet v${VERSION}" \
+      --tag-name v${VERSION} \
+      --description "Beta release v${VERSION}" \
+      --assets-link "${asset_link}"
+
+
 
 
 
