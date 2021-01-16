@@ -3,17 +3,32 @@ image: maven:latest
 stages:
   - build
 
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
 cache:
   paths:
     - .m2/repository/
-    - target/
 
 build:scarlet:jar:
   stage: build
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
   artifacts:
     paths:
-      - target/*.jar
-    expire_in: 1 week
+      - target/*-fat.jar
+    expire_in: 1 hour
   script:
     - mvn clean package
+
+#TODO: tag
+#TODO: automate the release
+beta-version:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+  script:
+    - echo 'beta release job'
+    - mvn deploy -gs ./settings.xml
 
