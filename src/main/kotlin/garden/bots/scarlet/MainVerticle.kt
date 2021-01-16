@@ -52,7 +52,7 @@ class MainVerticle : AbstractVerticle() {
         /* === 👋 Trigger initialize === */
         triggerEvent("initialize", json { obj("message" to "initialize") }, events)
           .onFailure {
-            println("😡 triggerEvent: initialize | ${it.message}")
+            println("😶 triggerEvent: initialize | ${it.message}")
           }
           .onSuccess {
             println("🙂 triggerEvent: initialize")
@@ -82,7 +82,7 @@ class MainVerticle : AbstractVerticle() {
           /* === 👋 Trigger mqttStarted === */
           triggerEvent("mqttStarted", mqttServer, events)
             .onFailure {
-              println("😡 triggerEvent: mqttStarted | ${it.message}")
+              println("😶 triggerEvent: mqttStarted | ${it.message}")
             }
             .onSuccess {
               println("🙂 triggerEvent: mqttStarted")
