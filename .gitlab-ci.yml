@@ -1,0 +1,21 @@
+image: maven:latest
+
+stages:
+  - build
+
+cache:
+  paths:
+    - .m2/repository/
+    - target/
+
+build:scarlet:jar:
+  stage: build
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 week
+  script:
+    - mvn compile assembly:single
+
+
+
