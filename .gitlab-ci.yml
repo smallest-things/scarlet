@@ -56,6 +56,8 @@ release:scarlet:beta:version:
   variables: 
     asset_link: |
       {"name":"Scarlet v${VERSION}", "url":"${RELEASE_PATH}"}
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   script: |
     echo "🚀 $RELEASE_PATH"
     echo "📦 $VERSION"
