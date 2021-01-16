@@ -24,14 +24,16 @@ build:scarlet:jar:
 
 #TODO: tag
 #TODO: automate the release
-beta-version:
+build:scarlet:beta:version:
   stage: build
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   artifacts:
     paths:
       - target/*-fat.jar
-    expire_in: never
+    expire_in: 1 hour
+    #expire_in: never
   script:
-    - mvn clean package
+    #- mvn clean package
+    - curl --version
 
