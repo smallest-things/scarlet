@@ -4,9 +4,8 @@ import garden.bots.scarlet.data.Function
 import garden.bots.scarlet.data.MqttClient
 import garden.bots.scarlet.data.MqttSubscription
 import garden.bots.scarlet.events.triggerEvent
-import garden.bots.scarlet.helpers.executeFunction
-import garden.bots.scarlet.helpers.getJsonPayLoad
-import garden.bots.scarlet.helpers.isFunctionCall
+import garden.bots.scarlet.functions.executeFunction
+import garden.bots.scarlet.helpers.isJsonPayLoad
 import io.netty.handler.codec.mqtt.MqttQoS
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
@@ -133,7 +132,7 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
       // if it's a function call the payload will be:
       // { result: something }
 
-      getJsonPayLoad(messagePayLoad)
+      isJsonPayLoad(messagePayLoad)
         .onFailure {
           // this is not a Json payload, this is a simple message
           println("🟦 simple message $messagePayLoad")
@@ -141,13 +140,14 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
         }
         .onSuccess {  jsonObject ->
           // this is a json payload, then check if it's a call of function
-          when(isFunctionCall(jsonObject)) { // TODO check the topic before
+
+          when(message.topicName().startsWith("functions/")) {
             false -> {
               println("🟪 json message $jsonObject")
               dispatchJsonMessage(jsonObject)
             }
             true -> { // this is a function call
-              executeFunction(jsonObject)
+              executeFunction(message.topicName(), jsonObject)
                 .onFailure {throwable ->
                   println("🟥 error with jsonObject $jsonObject")
                   dispatchJsonMessage(json { obj("error" to throwable.message) })
@@ -158,6 +158,7 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
                 }
             }
           }
+
         }
 
 

@@ -36,22 +36,6 @@ The examples use `MQTT.js`
 
 You can send three kinds of MQTT messages:
 
-#### json message with call of a function
-
-You have to set the **function name** and the **parameters** like that:
-
-```javascript
-// simple text message
-client.publish('topic_name', JSON.stringify({function:"hello", params:{name:"bob morane"}}))
-```
-
-All the subscribed clients will receive the following Json string with the result of the function:
-
-```javascript
-'{"result": {"message": "Hello World"}}'
-// where result is a string
-```
-
 #### simple text message
 
 ```javascript
@@ -79,13 +63,29 @@ All the subscribed clients will receive the following Json string:
 // where result is a string
 ```
 
+#### json message with call of a function
+
+You have to
+- publish on the topic `functions/name_of_the_function`
+- set the **parameters** as a json string:
+
+```javascript
+client.publish('functions/hello', JSON.stringify({name:"bob morane"}))
+```
+
+All the subscribed clients will receive the following Json string with the result of the function:
+
+```javascript
+'{"result": {"message": "Hello World"}}'
+// where result is a string
+```
+
 ## Test Scarlet with MQTT.js
 
 - run **Scarlet**: `java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar`
-- create a set of functions: `./create_all_functions.sh`
 - See `./testing/mqtt_js`:
   - run `node wait.js`
-  - then run `node hello.js`
+  - then run `node functions.message.js` or `text.message.js`
 
 ## Functions persistence
 
