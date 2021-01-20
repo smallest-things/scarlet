@@ -96,7 +96,20 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
       println("🟠 Just received message [${messagePayLoad}] with QoS [${message.qosLevel()}] on topic [${message.topicName()}]")
 
       /* --- dispatch messages to all subscribed clients --- */
-      val dispatchMessage = { jsonResult: JsonObject ->
+      val dispatchTextMessage = { textMessage: String ->
+        mqttSubscriptions.forEach { (id, mqttSubscription) ->
+          when(mqttSubscription.topic==message.topicName() && mqttSubscription.endpoint.isConnected) {
+            false -> {
+              // nothing to do right now
+            }
+            true -> {
+              mqttSubscription.endpoint.publish(message.topicName(), Buffer.buffer(textMessage), message.qosLevel(), false, false)
+            }
+          }
+        }
+      }
+
+      val dispatchJsonMessage = { jsonResult: JsonObject ->
         mqttSubscriptions.forEach { (id, mqttSubscription) ->
           when(mqttSubscription.topic==message.topicName() && mqttSubscription.endpoint.isConnected) {
             false -> {
@@ -109,36 +122,39 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
           }
         }
       }
+      // QUESTION: how to follo the reception of the message
 
       /* --- Check and Dispatch --- */
       // check the message payload
-      // and then all messages are dispatched with a json format:
+      // if the message is a text message
+      // then all messages are dispatched with a text format
+      // if the message is a json(string) message
+      // then all messages are dispatched with a json format
       // if it's a function call the payload will be:
       // { result: something }
-      // else:
-      // { message: something }
+
       getJsonPayLoad(messagePayLoad)
         .onFailure {
           // this is not a Json payload, this is a simple message
           println("🟦 simple message $messagePayLoad")
-          dispatchMessage(json { obj("message" to messagePayLoad) })
+          dispatchTextMessage(messagePayLoad.toString())
         }
         .onSuccess {  jsonObject ->
           // this is a json payload, then check if it's a call of function
-          when(isFunctionCall(jsonObject)) {
+          when(isFunctionCall(jsonObject)) { // TODO check the topic before
             false -> {
               println("🟪 json message $jsonObject")
-              dispatchMessage(jsonObject)
+              dispatchJsonMessage(jsonObject)
             }
             true -> { // this is a function call
               executeFunction(jsonObject)
                 .onFailure {throwable ->
                   println("🟥 error with jsonObject $jsonObject")
-                  dispatchMessage(json { obj("error" to throwable.message) })
+                  dispatchJsonMessage(json { obj("error" to throwable.message) })
                 }
                 .onSuccess {any ->
                   println("🟧 result of the function call: $any")
-                  dispatchMessage(json { obj("result" to any.toString()) })
+                  dispatchJsonMessage(json { obj("result" to any.toString()) })
                 }
             }
           }

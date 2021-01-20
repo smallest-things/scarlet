@@ -59,10 +59,10 @@ All the subscribed clients will receive the following Json string with the resul
 client.publish('topic_name', "👋 hello world 🌍")
 ```
 
-All the subscribed clients will receive the following Json string:
+All the subscribed clients will receive the following string:
 
 ```javascript
-'{"message": "👋 hello world 🌍"}'
+'"👋 hello world 🌍"'
 ```
 
 #### json message

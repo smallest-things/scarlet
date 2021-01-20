@@ -8,6 +8,6 @@ client.on('connect', _ => {
 })
 
 client.on('message',  (topic, message) => {
-  console.log(topic, JSON.parse(message.toString()))
+  console.log(topic, message.toString())
 })
 
