@@ -3,7 +3,13 @@ const client  = mqtt.connect('mqtt://localhost:1883')
 
 client.on('connect', _ => {
   client.subscribe('buddies', (err) => {
-    console.log(err ? err: "🖐️ Welcome")
+    console.log(err ? err: "subscribed to buddies")
+  })
+  client.subscribe('functions/yo', (err) => {
+    console.log(err ? err: "subscribed to functions/yo")
+  })
+  client.subscribe('functions/hello', (err) => {
+    console.log(err ? err: "subscribed to functions/hello")
   })
 })
 
