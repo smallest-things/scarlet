@@ -45,12 +45,12 @@ build:scarlet:distribution:
     # build the application
     mvn clean package
     # store variable(s)
-    RELEASE_PATH=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/scarlet/${CI_COMMIT_TAG}/scarlet-${CI_COMMIT_TAG}-SNAPSHOT-fat.jar
+    RELEASE_PATH=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/scarlet/${CI_COMMIT_TAG}/scarlet-${CI_COMMIT_TAG}-fat.jar
     echo "RELEASE_PATH=$RELEASE_PATH" > release.env
 
     # then publish it to the generic registry
     curl --header "JOB-TOKEN:$CI_JOB_TOKEN" \
-         --upload-file target/scarlet-${CI_COMMIT_TAG}-SNAPSHOT-fat.jar \
+         --upload-file target/scarlet-${CI_COMMIT_TAG}-fat.jar \
          "$RELEASE_PATH"
 
 create:scarlet:release:
