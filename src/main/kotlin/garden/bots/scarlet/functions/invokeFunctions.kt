@@ -12,7 +12,6 @@ fun executeFunction(topicName: String,  jsonObjectParameters: JsonObject): Resul
   ).onFailure { /* === 😡 Failure === */
     return Result.failure(it) // Exception(it.message)
   }.onSuccess { /* === 🙂 Success === */
-    println("🙂 this is a function call result: ===> $it")
     return Result.success(it.toString())
   }
 }

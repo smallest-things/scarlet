@@ -34,9 +34,9 @@ java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
 
 The examples use `MQTT.js`
 
-You can send three kinds of MQTT messages:
+You can send 2 kinds of MQTT messages:
 
-#### simple text message
+#### Simple text message
 
 ```javascript
 // simple text message
@@ -49,21 +49,7 @@ All the subscribed clients will receive the following string:
 '"👋 hello world 🌍"'
 ```
 
-#### json message
-
-```javascript
-// json message
-client.publish('topic_name', JSON.stringify({message:"hello world"}))
-```
-
-All the subscribed clients will receive the following Json string:
-
-```javascript
-'{"message":"hello world"}'
-// where result is a string
-```
-
-#### json message with call of a function
+#### Json message with call of a function
 
 You have to
 - publish on the topic `functions/name_of_the_function`
