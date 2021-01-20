@@ -3,9 +3,6 @@ target/*
 *.iml
 .idea/*
 *.DS_Store
-deploy.sh
-deploy.config
-test.sh
 node_modules
 .settings
 .classpath
@@ -13,7 +10,4 @@ node_modules
 hosts.config
 vm-test.sh
 .vscode
-scarlet.db
-storage/events/tests@0.0.0.js
-storage/functions/tests@0.0.0.js
 

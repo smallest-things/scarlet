@@ -39,8 +39,6 @@ echo "export JAVA_HOME=~/graalvm-ce-java8-${graalvm_version}" >> ~/.bashrc
 echo 'export PATH=\$PATH:\$JAVA_HOME/bin' >> ~/.bashrc
 source ~/.bashrc
 java -version
-gu install python
-gu install ruby
 EOF
 
 echo "${IP} ${vm_domain}" > ./hosts.config
