@@ -46,7 +46,7 @@ client.publish('topic_name', "👋 hello world 🌍")
 All the subscribed clients will receive the following string:
 
 ```javascript
-'"👋 hello world 🌍"'
+"👋 hello world 🌍"
 ```
 
 #### Json message with call of a function
@@ -63,7 +63,6 @@ All the subscribed clients will receive the following Json string with the resul
 
 ```javascript
 '{"result": {"message": "Hello World"}}'
-// where result is a string
 ```
 
 ## Test Scarlet with MQTT.js
