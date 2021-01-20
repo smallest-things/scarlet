@@ -61,8 +61,8 @@ client.publish('functions/hello', JSON.stringify({name:"bob morane"}))
 
 All the subscribed clients will receive the following Json string with the result of the function:
 
-```javascript
-'{"result": {"message": "Hello World"}}'
+```json
+{"result": {"message": "Hello World"}}
 ```
 
 ## Test Scarlet with MQTT.js
