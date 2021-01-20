@@ -26,21 +26,18 @@ class MainVerticle : AbstractVerticle() {
   }
 
   override fun start(startPromise: Promise<Void>) {
-    Logger.getLogger("io.vertx.core.impl.BlockedThreadChecker").setLevel(Level.OFF)
+    Logger.getLogger("io.vertx.core.impl.BlockedThreadChecker").level = Level.OFF
 
     val mqttServer = MqttServer.create(vertx)
-
-    val functions: MutableMap<String, Function> = HashMap<String, Function>()
-    val events: MutableMap<String, Function> = HashMap<String, Function>()
-
-    val mqttSubscriptions: MutableMap<String, MqttSubscription> = HashMap<String, MqttSubscription>()
-    val mqttClients: MutableMap<String, MqttClient> = HashMap<String, MqttClient>()
-
+    val functions: MutableMap<String, Function> = HashMap()
+    val events: MutableMap<String, Function> = HashMap()
+    val mqttSubscriptions: MutableMap<String, MqttSubscription> = HashMap()
+    val mqttClients: MutableMap<String, MqttClient> = HashMap()
     val mqttPort = System.getenv("MQTT_PORT")?.toInt() ?: 1883
 
     val adminToken = System.getenv("SCARLET_ADMIN_TOKEN") ?: ""
     // use it like that: export SCARLET_ADMIN_TOKEN="tada"; java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
-    // TODO: implement https and mqtts
+    // TODO: implement mqtts
 
     initializeStorage()
       .onFailure {
@@ -60,14 +57,7 @@ class MainVerticle : AbstractVerticle() {
         /* === end of trigger === */
       }
 
-    //basicHandlers(router)
-    //createAddFunctionRoute(router, functions, adminToken)
-    //createExecuteFunctionRoute(router, adminToken)
-    //createGetFunctionsRoute(router, functions, adminToken)
-    //createGetEventsRoute(router, events, adminToken)
-    //createGetSubscriptionsRoute(router, mqttSubscriptions, adminToken)
-
-    createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, functions, events)
+    createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, events)
 
     // 🚀 start mqtt server
     mqttServer.listen(mqttPort) { mqtt ->
@@ -88,12 +78,10 @@ class MainVerticle : AbstractVerticle() {
               println("🙂 triggerEvent: mqttStarted")
             }
           /* === end of trigger === */
-
           startPromise.complete()
         }
       } // end of when
     } // end of mqtt listen
-
   } // end of start()
 
   companion object {

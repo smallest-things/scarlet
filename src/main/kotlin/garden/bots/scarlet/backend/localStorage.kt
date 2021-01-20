@@ -73,7 +73,7 @@ fun getAllFunctions() : Result<MutableMap<String, Function>> {
 
           val currentFunction = Function(
             functionName,
-            functionLanguage.orEmpty(),
+            functionLanguage,
             functionCode,
             functionVersion
           )
@@ -101,7 +101,7 @@ fun getAllEvents() : Result<MutableMap<String, Function>> {
 
           val currentFunction = Function(
             eventName,
-            eventLanguage.orEmpty(),
+            eventLanguage,
             eventCode,
             eventVersion
           )
@@ -113,10 +113,3 @@ fun getAllEvents() : Result<MutableMap<String, Function>> {
   }
 }
 
-fun getAllMqttClients() : Result<MutableMap<String, MqttClient>> {
-  TODO()
-}
-
-fun getAllMqttSubscriptions() : Result<MutableMap<String, MqttSubscription>> {
-  TODO()
-}
