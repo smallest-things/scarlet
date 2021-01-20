@@ -34,10 +34,4 @@ cd scarlet
 java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
 ```
 
-Now, on the host side, you can access to the REST API like that:
-
-```bash
-export DOMAIN="192.168.64.96"; export HTTP_PORT=8080; ./create_all_functions.sh
-```
-
 > use the appropriate IP address 😉
