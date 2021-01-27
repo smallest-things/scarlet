@@ -10,4 +10,5 @@ node_modules
 hosts.config
 vm-test.sh
 .vscode
-
+certs/*.crt
+certs/*.key
