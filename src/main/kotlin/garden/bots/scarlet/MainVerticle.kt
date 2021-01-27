@@ -12,13 +12,16 @@ import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
+import io.vertx.core.net.PemKeyCertOptions
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.mqtt.MqttServer
+import io.vertx.mqtt.MqttServerOptions
 import java.util.logging.Level
 import java.util.logging.Logger
 
 class MainVerticle : AbstractVerticle() {
+
 
   override fun stop(stopPromise: Promise<Void>) {
     super.stop()
@@ -28,16 +31,32 @@ class MainVerticle : AbstractVerticle() {
   override fun start(startPromise: Promise<Void>) {
     Logger.getLogger("io.vertx.core.impl.BlockedThreadChecker").level = Level.OFF
 
-    val mqttServer = MqttServer.create(vertx)
     val functions: MutableMap<String, Function> = HashMap()
     val events: MutableMap<String, Function> = HashMap()
     val mqttSubscriptions: MutableMap<String, MqttSubscription> = HashMap()
     val mqttClients: MutableMap<String, MqttClient> = HashMap()
     val mqttPort = System.getenv("MQTT_PORT")?.toInt() ?: 1883
 
+    val mqttOptions = MqttServerOptions().setPort(mqttPort)
+
+    System.getenv("MQTT_KEY")?.takeIf { mqttKey ->
+      System.getenv("MQTT_CERT")?.takeIf { mqttCert ->
+        //TODO check if files exist
+        mqttOptions.setKeyCertOptions(PemKeyCertOptions()
+          .setKeyPath(mqttKey)
+          .setCertPath(mqttCert)
+        ).isSsl = true
+        true
+      }
+      true
+    }.let {
+      //TODO: display message
+    }
+
+    val mqttServer = MqttServer.create(vertx, mqttOptions)
+
     val adminToken = System.getenv("SCARLET_ADMIN_TOKEN") ?: ""
     // use it like that: export SCARLET_ADMIN_TOKEN="tada"; java -jar target/scarlet-0.0.0-SNAPSHOT-fat.jar
-    // TODO: implement mqtts
 
     initializeStorage()
       .onFailure {
@@ -60,7 +79,7 @@ class MainVerticle : AbstractVerticle() {
     createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, events)
 
     // 🚀 start mqtt server
-    mqttServer.listen(mqttPort) { mqtt ->
+    mqttServer.listen() { mqtt ->
       when {
         mqtt.failed() -> {
           mqtt.cause().printStackTrace()
@@ -68,6 +87,7 @@ class MainVerticle : AbstractVerticle() {
         }
         mqtt.succeeded() -> {
           println("📡 Scarlet -=8< mqtt server started on port $mqttPort")
+
 
           /* === 👋 Trigger mqttStarted === */
           triggerEvent("mqttStarted", mqttServer, events)

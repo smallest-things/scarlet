@@ -89,3 +89,14 @@ At every start of **Scarlet**, all functions of `./storage` are loaded and compi
 
 > - if you have several versions of a function, the last one overrides the others
 > - you can override the path `./storage` with this environment variable: `STORAGE_PATH`
+
+## SSL/TLS support
+
+To activate the SSL/TLS support with Scarlet, you need to provide a key, and a certificate with these environment variables:
+
+```shell
+MQTT_KEY="certs/mqtt.devsecops.run.key" \
+MQTT_CERT="certs/mqtt.devsecops.run.crt" \
+MQTT_PORT=8883 \
+java -jar target/scarlet-0.0.1-SNAPSHOT-fat.jar
+```
