@@ -6,6 +6,7 @@ import garden.bots.scarlet.events.triggerEvent
 import io.netty.handler.codec.mqtt.MqttQoS
 import io.vertx.mqtt.MqttEndpoint
 
+// TODO: check endpoint.auth() (?)
 // handling requests for subscriptions
 fun subscribeHandler(endpoint: MqttEndpoint, mqttSubscriptions: MutableMap<String, MqttSubscription>, events: MutableMap<String, Function>) {
   endpoint.subscribeHandler { subscribe ->

@@ -100,3 +100,11 @@ MQTT_CERT="certs/mqtt.devsecops.run.crt" \
 MQTT_PORT=8883 \
 java -jar target/scarlet-0.0.1-SNAPSHOT-fat.jar
 ```
+
+## Authentication
+
+We only provide the activation of the authentication checking process. It's up to you to implement all the check tasks:
+
+```
+// 🚧 WIP
+```

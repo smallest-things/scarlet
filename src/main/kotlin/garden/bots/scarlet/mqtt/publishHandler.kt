@@ -11,6 +11,7 @@ import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 
+// TODO: check endpoint.auth() (?)
 // handling incoming published messages
 fun publishHandler(endpoint: MqttEndpoint,  mqttSubscriptions: MutableMap<String, MqttSubscription>, events: MutableMap<String, Function>) {
 

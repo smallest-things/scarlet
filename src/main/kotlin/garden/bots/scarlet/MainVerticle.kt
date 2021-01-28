@@ -8,6 +8,7 @@ import garden.bots.scarlet.data.MqttClient
 import garden.bots.scarlet.data.MqttSubscription
 import garden.bots.scarlet.events.triggerEvent
 import garden.bots.scarlet.mqtt.createMQTTHandlers
+import garden.bots.scarlet.mqtt.createMQTTHandlersWithAuthentication
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import io.vertx.core.Vertx
@@ -39,6 +40,7 @@ class MainVerticle : AbstractVerticle() {
 
     val mqttOptions = MqttServerOptions().setPort(mqttPort)
 
+    //TODO: check if takeIf is the best way
     System.getenv("MQTT_KEY")?.takeIf { mqttKey ->
       System.getenv("MQTT_CERT")?.takeIf { mqttCert ->
         //TODO check if files exist
@@ -76,7 +78,11 @@ class MainVerticle : AbstractVerticle() {
         /* === end of trigger === */
       }
 
-    createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, events)
+    // Check if we need to activate the authentication
+    when(System.getenv("MQTT_AUTH")?.toBoolean() ?: false) {
+      false -> createMQTTHandlers(mqttServer, mqttClients, mqttSubscriptions, events)
+      true -> createMQTTHandlersWithAuthentication(mqttServer, mqttClients, mqttSubscriptions, events)
+    }
 
     // 🚀 start mqtt server
     mqttServer.listen() { mqtt ->
