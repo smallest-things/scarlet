@@ -9,9 +9,9 @@ import io.vertx.mqtt.MqttAuth
 import io.vertx.mqtt.MqttEndpoint
 import io.vertx.mqtt.MqttServer
 
-fun resumeHandlersCreation(endpoint: MqttEndpoint, mqttSubscriptions: MutableMap<String, MqttSubscription>, events: MutableMap<String, Function>) {
+fun resumeHandlersCreation(endpoint: MqttEndpoint, mqttClients:MutableMap<String, MqttClient>, mqttSubscriptions: MutableMap<String, MqttSubscription>, events: MutableMap<String, Function>) {
   // handling disconnect message
-  disconnectHandler(endpoint, mqttSubscriptions, events)
+  disconnectHandler(endpoint, mqttClients, mqttSubscriptions, events)
 
   // handling requests for subscriptions
   subscribeHandler(endpoint, mqttSubscriptions, events)
@@ -33,7 +33,6 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
 
     /* === 👋 Trigger mqttOnConnect === */
     //triggerEvent("mqttOnConnect", mqttClient.endpoint, events)
-    // TODO: change the place of this
     triggerEvent("mqttOnConnect", endpoint, events)
       .onFailure {
         // 🚧
@@ -50,7 +49,7 @@ fun createMQTTHandlers(mqttServer: MqttServer, mqttClients:MutableMap<String, Mq
     // TODO: what is the meaning of the parameter of accept
     endpoint.accept(false)
 
-    resumeHandlersCreation(endpoint, mqttSubscriptions, events)
+    resumeHandlersCreation(endpoint, mqttClients, mqttSubscriptions, events)
 
   }
 
@@ -64,7 +63,6 @@ fun createMQTTHandlersWithAuthentication(mqttServer: MqttServer, mqttClients:Mut
 
     /* === 👋 Trigger mqttOnConnect === */
     //triggerEvent("mqttOnConnect", mqttClient.endpoint, events)
-    // TODO: change the place of this
     triggerEvent("mqttOnConnect", endpoint, events)
       .onFailure {
         // 🚧
@@ -98,7 +96,7 @@ fun createMQTTHandlersWithAuthentication(mqttServer: MqttServer, mqttClients:Mut
                 // accept connection from the remote client
                 endpoint.accept(false)
 
-                resumeHandlersCreation(endpoint, mqttSubscriptions, events)
+                resumeHandlersCreation(endpoint, mqttClients, mqttSubscriptions, events)
 
               }
               else -> {
