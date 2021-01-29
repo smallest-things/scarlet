@@ -98,13 +98,41 @@ To activate the SSL/TLS support with Scarlet, you need to provide a key, and a c
 MQTT_KEY="certs/mqtt.devsecops.run.key" \
 MQTT_CERT="certs/mqtt.devsecops.run.crt" \
 MQTT_PORT=8883 \
-java -jar target/scarlet-0.0.1-SNAPSHOT-fat.jar
+java -jar target/scarlet-0.0.2-SNAPSHOT-fat.jar
 ```
 
 ## Authentication
 
-We only provide the activation of the authentication checking process. It's up to you to implement all the check tasks:
+We only provide the activation of the authentication checking process. It's up to you to implement all the check tasks.
 
+For that, create a `mqttOnAuthenticate@x.y.z.kt` file in `/storage/events` directory (`x.y.z` is the version number, Scarlet will use the most recent version). Then, implement a `mqttOnAuthenticate` function that will return a `MqttConnectReturnCode` like the example below:
+
+```kotlin
+import io.vertx.mqtt.MqttEndpoint
+import io.netty.handler.codec.mqtt.MqttConnectReturnCode
+import io.vertx.mqtt.MqttAuth
+
+fun mqttOnAuthenticate(endpoint: MqttEndpoint) : MqttConnectReturnCode {
+
+  when(endpoint.auth()) {
+    is MqttAuth -> {
+      if (endpoint.auth().username=="thing" && endpoint.auth().password=="secret") {
+        return MqttConnectReturnCode.CONNECTION_ACCEPTED
+      } else {
+        return MqttConnectReturnCode.CONNECTION_REFUSED_BAD_USER_NAME_OR_PASSWORD
+      }
+    }
+    else -> {
+      return MqttConnectReturnCode.CONNECTION_REFUSED_NOT_AUTHORIZED
+    }
+  }
+}
 ```
-// 🚧 WIP
+
+Scarlet will compile the function at the startup.
+
+To activate the authentication mode, set the `MQTT_AUTH` environment variable to `true`:
+
+```shell
+MQTT_AUTH="true" java -jar target/scarlet-0.0.2-SNAPSHOT-fat.jar
 ```
